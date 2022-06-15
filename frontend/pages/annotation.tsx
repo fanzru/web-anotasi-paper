@@ -11,7 +11,7 @@ const Annotation = () => {
   const handleChange = (file: any) => {
     setFile(file)
   }
-  console.log("--------------------------------",file)
+
   return (
     <>
       <Layout >
