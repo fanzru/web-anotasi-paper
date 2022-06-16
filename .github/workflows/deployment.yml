@@ -1,8 +1,7 @@
 name: Server Deployment
-
 on:
   push:
-    branches: [production]
+    branches: [main]
 
 jobs:
   Build-Check-Frontend:
