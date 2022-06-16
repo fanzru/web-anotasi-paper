@@ -6,8 +6,8 @@ echo "Deploying application ..."
 
 
 # Update codebase
-git fetch origin production
-git reset --hard origin/production
+git fetch origin main
+git reset --hard origin/main
 
 echo "Installing dependencies 🛠"
 yarn install
