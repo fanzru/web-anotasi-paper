@@ -12,6 +12,8 @@
     "axios": "^0.27.2",
     "clsx": "^1.1.1",
     "daisyui": "^2.15.2",
+    "flowbite": "^1.4.7",
+    "flowbite-react": "^0.0.26",
     "next": "latest",
     "react": "18.1.0",
     "react-dom": "18.1.0",
