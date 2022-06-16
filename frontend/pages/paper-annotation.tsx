@@ -46,7 +46,40 @@ const Home: NextPage = () => {
                     return (
                       <div key={idx} className="">
                         {
-                          data.selected_sentences.length != 0? data.section_name : "" 
+                          data.selected_sentences.length != 0? 
+                          <>
+                           <div className="w-full border-black border-[2px] border-gray-300 rounded-lg mt-6">
+                              <div className="w-full h-[50px] bg-gray-100 flex items-center px-5 rounded-t-lg font-medium">
+                                {data.section_name}
+                              </div>
+                              <div className="p-5">
+                                {
+                                  data.selected_sentences.map((x,idx)=> {
+                                    for (let i=0; i<x.sentences.length; i++){
+                                      console.log("--------------------------------------------------------",x.sentences.length)
+                                      return (
+                                        <div key={idx} className="mt-4">
+                                          {
+                                            i==0?
+                                            <p>
+                                              {x.sentences[i]?.sent + x.sentences[i+1]?.sent}
+                                            </p> 
+                                            :
+                                            <p>
+                                            {x.sentences[i-1]?.sent + x.sentences[i]?.sent + x.sentences[i+1]?.sent}
+                                          </p> 
+                                          }
+                                        </div>
+                                      )
+                                    }
+                                             
+                                    
+                                  })
+                                }
+                              </div>
+                            </div>
+                          </>
+                          : "" 
                         }
                       </div>
                     )
