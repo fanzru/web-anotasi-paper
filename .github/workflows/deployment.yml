@@ -1,0 +1,39 @@
+name: Server Deployment
+
+on:
+  push:
+    branches: [production]
+
+jobs:
+  Build-Check-Frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./frontend"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Installing Dependencies
+        run: yarn install
+      - name: Trying to Build
+        run: yarn build
+  Deploy:
+    needs: Build-Check-Frontend
+    runs-on: ubuntu-latest
+    env:
+      FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/frontend/scripts
+    steps:
+      - uses: actions/checkout@v2
+      - name: Preparing to deploy to production 🚀🤘
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          script: |
+            cd ~/skripsi/web-anotasi-paper/frontend/scripts
+            chmod +x deploy.sh
+            ./deploy.sh
