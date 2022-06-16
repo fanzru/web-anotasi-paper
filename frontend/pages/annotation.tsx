@@ -3,19 +3,77 @@ import Layout from "../components/Layout"
 import DataArticle from "../data/article"
 import { useState } from "react"
 import { FileUploader } from "react-drag-drop-files";
+import {changePaperData} from '../redux/paperSlice'
+import axios from "axios";
+import fs from 'fs';
+import * as https from 'https';
+import { set } from "immer/dist/internal";
+import { useDispatch } from 'react-redux'
+import { useRouter } from 'next/router'
 const Annotation = () => {
+  const router = useRouter()
+  const dispatch = useDispatch();
   const [file,setFile] = useState(null)
   const [category, setCategory] = useState("")
   const [domain,setDomain] = useState("")
   const fileTypes = ["CSV", "PDF"]
+  const [isSetFile, SetIsSetFile] = useState(false)
+  const [isLoading,setIsLoading] = useState(false)
+  const [paperValue, setPaperValue] = useState({
+    "paperId": "",
+    "fileName": "",
+ });
+
   const handleChange = (file: any) => {
+    SetIsSetFile(true)
     setFile(file)
+  }
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    setIsLoading(true)
+    const agent = new https.Agent({
+      rejectUnauthorized: false,
+      minVersion: 'TLSv1',
+    });
+
+    var bodyFormData = new FormData();
+    bodyFormData.append("paper_id", "cek");
+    bodyFormData.append("pdf_article", file!)
+    
+    axios({
+      method: "POST",
+      url: 'https://ir-group.ec.tuwien.ac.at/artu_az_identification/identify_az',
+      data: bodyFormData,
+      headers: {'Content-Type': 'multipart/form-data',"Access-Control-Allow-Origin": "*"},
+      httpsAgent: agent 
+    })
+    .then((res)=> {
+      dispatch(changePaperData(res.data))
+      router.push('/paper-annotation')
+      setIsLoading(false)
+
+    })
+    .catch((e) => {
+      console.log("-------------------------------- cie error")
+      console.log(e)
+      setIsLoading(false)
+    })
+
   }
 
   return (
     <>
       <Layout >
-        <div className=" flex justify-center">
+        {
+          isLoading? 
+          <>
+            <div className="flex justify-center mt-[200px]">
+              Loading....
+            </div>
+          </>
+          :
+          <div className=" flex justify-center">
           <div className=" mt-[100px] flex max-width-component w-[100%] px-5">
             <div className="w-1/2 border-2 border-gray-200 mr-5 p-10 rounded-lg">Pdf Viewer</div>
             <div className="w-1/2 ">
@@ -60,20 +118,23 @@ const Annotation = () => {
                   <h1 className="mb-2 text">Choose CSV file of annotation progress or pdf article</h1>
                   <FileUploader handleChange={handleChange} name="file" types={fileTypes}>
                     <button onClick={(e) => (e.preventDefault())} className="h-[200px] border-2 w-[100%] rounded-md border-dashed opacity-60">
-                      <p>Upload Disini</p>
+                      {
+                        isSetFile? <p>File Berhasil Di Tambahkan</p>:<p>Upload Disini</p>
+                      }
                     </button>
                   </FileUploader>
                 </div>
               </div>
               {/* Card Upload Article */}
               <div className="mb-10">
-                <button className="btn w-full  mt-6">
+                <button className="btn w-full  mt-6" onClick={handleSubmit}>
                   Submit
               </button>
               </div>
             </div>
           </div>
         </div>
+        }
           
       </Layout>
     </>
