@@ -1,21 +1,19 @@
-type Sentence = {
-  sent: String
-  tag: String
-}
+export type Sentence = {
+  sent: string;
+  tag: string;
+};
 
-type selectedSentence = {
+export type selectedSentence = {
   par_id: number
   sentences: Sentence[]
 }
 
-type Section = {
-  section_name: String
-  selected_sentences: selectedSentence[]
-}
+export type Section = {
+  section_name: string;
+  selected_sentences: selectedSentence[];
+};
 
-type dataPaper = {
-  paper_id: String
-  sections: Section[]
-}
-
-export default dataPaper
+export type dataPaper = {
+  paper_id: string;
+  sections: Section[];
+};

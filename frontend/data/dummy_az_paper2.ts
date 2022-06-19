@@ -1,4 +1,6 @@
-const DataSummaryPaper = {
+import {dataPaper} from "../types/paper";
+
+const DataSummaryPaper: dataPaper = {
   "paper_id": "paper_identifier",
   "sections": [
       {

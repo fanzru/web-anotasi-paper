@@ -1,4 +1,4 @@
-import dataPaper from "../types/paper"
+import {dataPaper} from "../types/paper"
 
 const DataAz: dataPaper = {
   "paper_id": "paper_identifier",
