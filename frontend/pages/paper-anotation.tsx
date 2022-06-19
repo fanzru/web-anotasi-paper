@@ -4,6 +4,8 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectNavbarUrlValue } from '../redux/paperSlice';
 import DataAx from '../data/dummy_az_paper2';
 import { useState } from 'react';
+import CardCollapse from '../components/CardCollapse';
+import Card from '../components/Card';
 
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState(0);
@@ -21,65 +23,46 @@ const PaperAnotation: NextPage = () => {
             <div className='w-1/2 '>
               <div className='w-full h-full'>
                 {/* Colapse Quick To How*/}
-                <div className='my-w collapse w-full border rounded-md border-base-300 collapse-arrow'>
-                  <input type='checkbox' />
-                  <div className='collapse-title text-xl font-medium font-bold'>
-                    Quick How To
-                  </div>
-                  <div className='collapse-content'>
-                    Ini Merupakan Sebuah Deskripisi
-                  </div>
-                </div>
+                <CardCollapse title={'Quick How To'}>
+                  Ini Merupakan Sebuah Deskripsi
+                </CardCollapse>
 
                 {/*  Guidelines*/}
-                <div className='my-w collapse w-full border rounded-md border-base-300 collapse-arrow mt-6'>
-                  <input type='checkbox' />
-                  <div className='collapse-title text-xl font-medium font-bold'>
-                    Guidelines
-                  </div>
-                  <div className='collapse-content'>
-                    Ini Merupakan Sebuah Deskripisi
-                  </div>
-                </div>
+                <CardCollapse title={'Guidelines'}>
+                  Ini Merupakan Sebuah Deskripsi
+                </CardCollapse>
 
                 {/* Paper Data */}
                 {DataAx.sections.map((data, idx) => {
                   return (
                     <div key={idx} className=''>
                       {data.selected_sentences.length != 0 ? (
-                        <>
-                          <div className='w-full border-black border-[2px] border-gray-300 rounded-lg mt-6'>
-                            <div className='w-full h-[50px] bg-gray-100 flex items-center px-5 rounded-t-lg font-medium'>
-                              {data.section_name}
-                            </div>
-                            <div className='p-5'>
-                              {data.selected_sentences.map((x, idx) => {
-                                for (let i = 0; i < x.sentences.length; i++) {
-                                  console.log(
-                                    '--------------------------------------------------------',
-                                    x.sentences.length
-                                  );
-                                  return (
-                                    <div key={idx} className='mt-4'>
-                                      {i == 0 ? (
-                                        <p>
-                                          {x.sentences[i]?.sent +
-                                            x.sentences[i + 1]?.sent}
-                                        </p>
-                                      ) : (
-                                        <p>
-                                          {x.sentences[i - 1]?.sent +
-                                            x.sentences[i]?.sent +
-                                            x.sentences[i + 1]?.sent}
-                                        </p>
-                                      )}
-                                    </div>
-                                  );
-                                }
-                              })}
-                            </div>
-                          </div>
-                        </>
+                          <Card title={data.section_name}>
+                            {data.selected_sentences.map((x, idx) => {
+                              for (let i = 0; i < x.sentences.length; i++) {
+                                console.log(
+                                  '--------------------------------------------------------',
+                                  x.sentences.length
+                                );
+                                return (
+                                  <div key={idx} className='mt-4'>
+                                    {i == 0 ? (
+                                      <p>
+                                        {x.sentences[i]?.sent +
+                                          x.sentences[i + 1]?.sent}
+                                      </p>
+                                    ) : (
+                                      <p>
+                                        {x.sentences[i - 1]?.sent +
+                                          x.sentences[i]?.sent +
+                                          x.sentences[i + 1]?.sent}
+                                      </p>
+                                    )}
+                                  </div>
+                                );
+                              }
+                            })}
+                          </Card>
                       ) : (
                         ''
                       )}
