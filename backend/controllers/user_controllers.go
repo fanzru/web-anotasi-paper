@@ -11,13 +11,27 @@ import (
 )
 
 func RegisterController(c echo.Context) error {
+	db, err := config.ConnectionDatabase()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!"))
+	}
+
 	data := &models.User{}
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!"))
 	}
-	err := utils.ValidateUser(data)
+	err = utils.ValidateUser(data)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("Missing fields or data not valid!"))
+	}
+
+	r := &models.User{}
+	err = db.Where("email = ?", data.Email).First(r).Error
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("DB Error"))
+	}
+	if r.Email == data.Email {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Already Exists"))
 	}
 
 	//hashing password
@@ -27,11 +41,6 @@ func RegisterController(c echo.Context) error {
 	}
 
 	data.Password = string(hash)
-
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!"))
-	}
 
 	err = db.Create(data).Error
 	if err != nil {
