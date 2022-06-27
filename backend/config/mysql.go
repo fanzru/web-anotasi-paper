@@ -3,15 +3,22 @@ package config
 import (
 	"backend/models"
 	"fmt"
+	"log"
+	"os"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func ConnectionDatabase() (*gorm.DB, error) {
-	dsn := "root:fanzru@tcp(103.55.38.98:1000)/db_riset_tuwien?charset=utf8mb4&parseTime=True&loc=Local"
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	configStatment := fmt.Sprintf("%v:%v@tcp(%v:%v)/%v?charset=utf8mb4&parseTime=True&loc=Local", os.Getenv("USERNAME"), os.Getenv("PASSWORD"), os.Getenv("HOST"), os.Getenv("PORT"), os.Getenv("DBNAME"))
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(configStatment), &gorm.Config{})
 	// if there is an error opening the connection, handle it
 	if err != nil {
 		return nil, err
