@@ -1,0 +1,8 @@
+{
+  "apps": [
+    {
+      "name": "BE-WEB-ANOTASI-PAPER",
+      "script": "go run main.go"
+    }
+  ]
+}
