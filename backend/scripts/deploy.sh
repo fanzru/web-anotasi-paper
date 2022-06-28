@@ -8,6 +8,10 @@ echo "Deploying application ..."
 # echo "Restart pm2 service 🔥"
 # pm2 restart deploy.json
 
+# Update codebase
+git fetch origin main
+git reset --hard origin/main
+
 echo "Installing dependencies 🛠"
 go mod tidy
 
