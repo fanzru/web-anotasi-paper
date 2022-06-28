@@ -1,0 +1,36 @@
+name: Server Deployment
+on:
+  push:
+    branches: [main]
+
+jobs:
+  Build-Check-Backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./backend"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - name: Installing Dependencies
+        run: go mod tidy
+  Deploy:
+    needs: Build-Check-Backend
+    runs-on: ubuntu-latest
+    env:
+      FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/backend/scripts
+    steps:
+      - uses: actions/checkout@v2
+      - name: Preparing to deploy to production 🚀🤘
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          PORT: ${{ secrets.PORT }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          script: |
+            cd ~/skripsi/web-anotasi-paper/backend/scripts
+            chmod +x deploy.sh
+            ./deploy.sh
