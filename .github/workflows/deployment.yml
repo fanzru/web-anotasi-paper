@@ -31,7 +31,7 @@ jobs:
       - name: Trying to Build
         run: yarn build
   DeployFrontend:
-    needs: Build-Check-Frontend
+    needs: [Build-Check-Frontend, Build-Check-Backend]
     runs-on: ubuntu-latest
     env:
       FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/frontend/scripts
@@ -48,6 +48,7 @@ jobs:
             cd ~/skripsi/web-anotasi-paper/frontend/scripts
             chmod +x deploy.sh
             ./deploy.sh
+            
   DeployBackend:
     needs: DeployFrontend
     runs-on: ubuntu-latest
