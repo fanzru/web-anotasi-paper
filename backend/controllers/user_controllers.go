@@ -4,7 +4,6 @@ import (
 	"backend/config"
 	"backend/models"
 	"backend/utils"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -30,11 +29,9 @@ func RegisterController(c echo.Context) error {
 	}
 
 	r := &models.User{}
-	err = db.Where("email = ?", data.Email).First(r).Error
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("DB Error"))
-	}
-	if r.Email == data.Email {
+	rows := db.Where("email = ?", data.Email).First(r)
+	if rows.RowsAffected != 0 || r.Email == data.Email {
+		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Already Exists"))
 	}
 
@@ -78,7 +75,7 @@ func LoginController(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Wrong Password!"))
 	}
 
-	result.Token = utils.JwtGenerator(result.Name, result.Email, os.Getenv("JWT_TOKEN"))
+	result.Token = utils.JwtGenerator(result.Id, result.Name, result.Email, os.Getenv("JWT_TOKEN"))
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", result.Token))
 }
 
@@ -87,14 +84,9 @@ type Token struct {
 }
 
 func UserProfileController(c echo.Context) error {
-	data := &Token{}
-	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!"))
-	}
-	r, v := utils.ExtractClaims(data.Token)
-	if !v {
+	result, status := utils.ExtractClaims(c)
+	if !status {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!"))
 	}
-	fmt.Println("--", r)
-	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", nil))
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", result))
 }

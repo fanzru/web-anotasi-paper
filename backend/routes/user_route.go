@@ -10,9 +10,11 @@ func UserRoutes(e *echo.Echo) *echo.Echo {
 	// var IsLoggedIn = middleware.JWTWithConfig(middleware.JWTConfig{
 	// 	SigningKey: []byte("secret"),
 	// })
-	e.POST("/api/user/register", controllers.RegisterController)
-	e.POST("/api/user/login", controllers.LoginController)
-	e.GET("/api/user", controllers.UserProfileController)
 
+	g := e.Group("/api/user")
+	// customMiddleware := utils.CustomeMiddleware()
+	g.POST("/register", controllers.RegisterController)
+	g.POST("/login", controllers.LoginController)
+	g.GET("/", controllers.UserProfileController)
 	return e
 }
