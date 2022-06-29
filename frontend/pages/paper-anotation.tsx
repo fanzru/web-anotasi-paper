@@ -15,17 +15,6 @@ import Cookies from 'universal-cookie';
 import { isTokenValid } from '../lib/tokenValidate';
 import { axiosInstance } from '../lib/axios';
 
-const check = async () => {
-  const cookie = new Cookies();
-  const authToken = cookie.get('token');
-
-  const result = await axiosInstance.get('/api/user/', {
-    headers: { Authorization: `Bearer ${authToken}` },
-  });
-
-  return result;
-};
-
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState(0);
   const sections = DataPaper.sections;
