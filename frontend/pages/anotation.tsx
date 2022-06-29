@@ -1,6 +1,6 @@
 import Layout from '../components/Layout';
 import DataArticle from '../data/article';
-import { useState } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
 import { changePaperData } from '../redux/paperSlice';
 import axios from 'axios';
@@ -8,14 +8,15 @@ import * as https from 'https';
 import { useDispatch } from 'react-redux';
 import { useRouter } from 'next/router';
 import Card from '../components/Card';
-import { SpecialZoomLevel, Viewer, Worker } from '@react-pdf-viewer/core';
+import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 const Annotation = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState<File>();
+  const [url, setUrl] = useState('');
   const [category, setCategory] = useState('');
   const [domain, setDomain] = useState('');
   const fileTypes = ['CSV', 'PDF'];
@@ -31,12 +32,14 @@ const Annotation = () => {
   const handleChange = (file: any) => {
     SetIsSetFile(true);
     setFile(file);
-    // console.log(URL.createObjectURL(file.name));
+    setUrl(URL.createObjectURL(file));
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
+    console.log(url);
+
     const agent = new https.Agent({
       rejectUnauthorized: false,
       minVersion: 'TLSv1',
@@ -76,19 +79,26 @@ const Annotation = () => {
             <div className='flex justify-center mt-[200px]'>Loading....</div>
           </>
         ) : (
-          <div className=' flex justify-center'>
+          <div className='flex justify-center h-screen'>
             <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5'>
               {/* PDF Viewer */}
-              <div className='md:w-1/2 w-full max-h-[880px] border-2 border-gray-300 rounded-lg mb-6 md:mr-4 overflow-hidden'>
+              <div className='md:w-1/2 w-full border-2 border-gray-300 rounded-lg mb-6 md:mr-4 overflow-hidden'>
                 <div className='w-full h-[50px] bg-gray-100 flex items-center px-5 rounded-t-lg font-medium'>
                   PDF Viewer
                 </div>
                 <div className='p-5 h-full'>
-                  <Viewer
-                    fileUrl={'/dummyExample.pdf'}
-                    plugins={[defaultLayoutPluginInstance]}
-                    defaultScale={SpecialZoomLevel.PageFit}
-                  />
+                  {url ? (
+                    <Viewer
+                      // fileUrl={'/dummyExample.pdf'}
+                      fileUrl={url}
+                      plugins={[defaultLayoutPluginInstance]}
+                      defaultScale={SpecialZoomLevel.PageFit}
+                    />
+                  ) : (
+                    <div className='flex justify-center items-center h-full'>
+                      <p>Preview PDF</p>
+                    </div>
+                  )}
                 </div>
               </div>
 

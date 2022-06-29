@@ -14,6 +14,9 @@ import { useRouter } from 'next/router';
 import Cookies from 'universal-cookie';
 import { isTokenValid } from '../lib/tokenValidate';
 import { axiosInstance } from '../lib/axios';
+import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState(0);
@@ -21,6 +24,7 @@ const PaperAnotation: NextPage = () => {
   const router = useRouter();
   const cookie = new Cookies();
   const authToken = cookie.get('token');
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const tes = async () => {
     if (!authToken) return router.push('/login');
@@ -33,13 +37,22 @@ const PaperAnotation: NextPage = () => {
   return (
     <>
       <Layout>
-        <div className=' flex justify-center'>
-          <div className=' mt-[100px] flex max-width-component w-[100%] px-5'>
-            <div className='w-1/2 border-2 border-gray-200 mr-5 p-10 rounded-lg'>
-              Pdf Viewer
+        <div className='flex justify-center h-screen'>
+          <div className='flex max-width-component mt-24 w-full px-5'>
+            <div className='md:w-1/2 w-full max-h-[880px] border-2 border-gray-300 rounded-lg mb-6 md:mr-4 overflow-hidden'>
+              <div className='w-full h-[50px] bg-gray-100 flex items-center px-5 rounded-t-lg font-medium'>
+                PDF Viewer
+              </div>
+              <div className='p-5 h-full'>
+                <Viewer
+                  fileUrl={'/dummyExample.pdf'}
+                  plugins={[defaultLayoutPluginInstance]}
+                  defaultScale={SpecialZoomLevel.PageFit}
+                />
+              </div>
             </div>
-            <div className='w-1/2 '>
-              <div className='w-full h-full'>
+            <div className='w-1/2 overflow-auto'>
+              
                 {/* Colapse Quick To How*/}
                 <CardCollapse title={'Quick How To'}>
                   Ini Merupakan Sebuah Deskripsi
@@ -128,11 +141,10 @@ const PaperAnotation: NextPage = () => {
                   );
                 })}
 
-                <div className='flex justify-between mt-10'>
+                <div className='flex justify-between my-10'>
                   <button className='btn btn-primary'>PREV</button>
                   <button className='btn'>NEXT</button>
                 </div>
-              </div>
             </div>
           </div>
         </div>
