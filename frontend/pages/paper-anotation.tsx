@@ -3,18 +3,44 @@ import Layout from '../components/Layout';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectNavbarUrlValue } from '../redux/paperSlice';
 import DataPaper from '../data/dummy_az_identification';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import CardCollapse from '../components/CardCollapse';
 import Card from '../components/Card';
 import { Tag } from '../data/tag';
 import Radio from '../components/Radio';
 import { Section } from '../types/paper';
 import Sentence from '../components/Sentence';
+import { useRouter } from 'next/router';
+import Cookies from 'universal-cookie';
+import { isTokenValid } from '../lib/tokenValidate';
+import { axiosInstance } from '../lib/axios';
+
+const check = async () => {
+  const cookie = new Cookies();
+  const authToken = cookie.get('token');
+
+  const result = await axiosInstance.get('/api/user/', {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
+
+  return result;
+};
 
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState(0);
   const sections = DataPaper.sections;
+  const router = useRouter();
+  const cookie = new Cookies();
+  const authToken = cookie.get('token');
 
+  const tes = async () => {
+    if (!authToken) return router.push('/login');
+    if (await isTokenValid()) return router.push('/paper-anotation');
+  };
+
+  useEffect(() => {
+    tes();
+  }, []);
   return (
     <>
       <Layout>
@@ -112,6 +138,7 @@ const PaperAnotation: NextPage = () => {
                     </div>
                   );
                 })}
+
                 <div className='flex justify-between mt-10'>
                   <button className='btn btn-primary'>PREV</button>
                   <button className='btn'>NEXT</button>

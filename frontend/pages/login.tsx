@@ -1,57 +1,61 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import Cookies from 'universal-cookie';
 import { axiosInstance } from '../lib/axios';
+import { isTokenValid } from '../lib/tokenValidate';
 
-type Register = {
+type Login = {
   name: string;
   email: string;
   password: string;
 };
 
-const Register = () => {
+const Login = () => {
+  const router = useRouter();
+  const cookie = new Cookies();
+  const authToken = cookie.get('token');
+
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Register>();
+  } = useForm<Login>();
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-    const result = await axiosInstance
-      .post('/api/user/register', {
-        ...data,
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      const auth = await axiosInstance
+        .post('/api/user/login', {
+          ...data,
+        })
+        .catch((error) => {
+          console.log(error);
+        });
 
-    console.log(result?.data.status);
+      if (auth?.data.status) {
+        cookie.set('token', auth.data.value);
+        router.push('/paper-anotation');
+      }
+    } catch (e) {
+      console.log(e);
+    }
   });
 
+  useEffect(() => {
+    const checkValidate = async () => {
+      if (!authToken) return router.push('/login');
+      if (await isTokenValid()) return router.push('/paper-anotation');
+    };
+    checkValidate();
+  }, []);
 
   return (
     <div className='h-screen flex items-center justify-center'>
       <div className='card w-96 bg-base-100 shadow-xl'>
         <div className='card-body'>
-          <h2 className='card-title text-3xl mb-5'>Register</h2>
+          <h2 className='card-title text-3xl mb-5'>Login</h2>
           <form onSubmit={onSubmit}>
-            <div>
-              <label className='label'>
-                <span className='label-text'>Nama</span>
-                {errors.name && (
-                  <span className='label-text-alt text-error'>
-                    {errors.name?.message}
-                  </span>
-                )}
-              </label>
-              <input
-                type='text'
-                placeholder='Type here'
-                className='input input-bordered w-full max-w-xs'
-                {...register('name', { required: 'Name is Required' })}
-              />
-            </div>
             <div>
               <label className='label'>
                 <span className='label-text'>Email</span>
@@ -92,14 +96,14 @@ const Register = () => {
             </div>
             <div className='mt-3 card-actions justify-end'>
               <button type='submit' className='btn btn-primary'>
-                Register
+                Login
               </button>
             </div>
           </form>
           <p>
-            Sudah punya akun?{' '}
-            <Link href='/login' passHref>
-              <span className='link'>Login</span>
+            Belum punya akun?{' '}
+            <Link href='/register' passHref>
+              <span className='link'>Register</span>
             </Link>
           </p>
         </div>
@@ -108,4 +112,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;
