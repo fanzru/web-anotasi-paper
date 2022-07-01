@@ -10,22 +10,22 @@ jobs:
       run:
         working-directory: "./backend"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          node-version: 14
+          go-version: '>=1.17.0'
       - name: Installing Dependencies
-        run: go mod tidy
+        run: go run main.go
   Build-Check-Frontend:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: "./frontend"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - name: Installing Dependencies
         run: yarn install
       - name: Trying to Build
