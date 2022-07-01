@@ -15,7 +15,7 @@ jobs:
         with:
           go-version: '>=1.17.0'
       - name: Installing Dependencies
-        run: go run main.go
+        run: go mod tidy
   Build-Check-Frontend:
     runs-on: ubuntu-latest
     defaults:
@@ -36,7 +36,7 @@ jobs:
     env:
       FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/frontend/scripts
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Preparing to deploy to production 🚀🤘
         uses: appleboy/ssh-action@master
         with:
