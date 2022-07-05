@@ -14,13 +14,13 @@ const Sentence: FC<Sen> = ({ data }) => {
   } else if (data.tag == 'Method') {
     textColor = 'bg-info';
   } else if (data.tag == 'Result') {
-    textColor = 'bg-primary';
+    textColor = 'bg-primary text-white';
   } else if (data.tag == 'Conclusion') {
     textColor = 'bg-success';
   } else if (data.tag == 'Method/Result') {
     textColor = 'bg-accent';
   } else if (data.tag == 'Other') {
-    textColor = 'bg-neutral';
+    textColor = 'bg-neutral text-white';
   } else {
     textColor = 'bg-error';
   }

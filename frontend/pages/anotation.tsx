@@ -38,7 +38,6 @@ const Annotation = () => {
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log(url);
 
     const agent = new https.Agent({
       rejectUnauthorized: false,
@@ -65,7 +64,7 @@ const Annotation = () => {
         setIsLoading(false);
       })
       .catch((e) => {
-        console.log('-------------------------------- cie error');
+        console.log('cie error');
         console.log(e);
         setIsLoading(false);
       });

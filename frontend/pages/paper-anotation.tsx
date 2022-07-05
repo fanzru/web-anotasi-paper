@@ -1,30 +1,30 @@
 import type { NextPage } from 'next';
-import Layout from '../components/Layout';
-import { useSelector, useDispatch } from 'react-redux';
-import { selectNavbarUrlValue } from '../redux/paperSlice';
-import DataPaper from '../data/dummy_az_identification';
 import { useEffect, useState } from 'react';
-import CardCollapse from '../components/CardCollapse';
-import Card from '../components/Card';
-import { Tag } from '../data/tag';
-import Radio from '../components/Radio';
-import { Section } from '../types/paper';
-import Sentence from '../components/Sentence';
 import { useRouter } from 'next/router';
 import Cookies from 'universal-cookie';
-import { isTokenValid } from '../lib/tokenValidate';
-import { axiosInstance } from '../lib/axios';
+
+import { Tag } from '@/data/tag';
+import Card from '@/components/Card';
+import Radio from '@/components/Radio';
+import { selectedSentence } from '@/types/paper';
+import Layout from '@/components/Layout';
+import Sentence from '@/components/Sentence';
+import { isTokenValid } from '@/lib/tokenValidate';
+import CardCollapse from '@/components/CardCollapse';
+import DataPaper from '@/data/dummy_az_identification';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 const PaperAnotation: NextPage = () => {
-  const [numberSection, setNumberSection] = useState(0);
-  const sections = DataPaper.sections;
+  const [numberSection, setNumberSection] = useState<number>(0);
   const router = useRouter();
   const cookie = new Cookies();
   const authToken = cookie.get('token');
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  const Sections = DataPaper.sections.filter(
+    (section) => section.selected_sentences.length > 0
+  );
 
   const tes = async () => {
     if (!authToken) return router.push('/login');
@@ -34,6 +34,7 @@ const PaperAnotation: NextPage = () => {
   useEffect(() => {
     tes();
   }, []);
+  
   return (
     <>
       <Layout>
@@ -52,99 +53,103 @@ const PaperAnotation: NextPage = () => {
               </div>
             </div>
             <div className='w-1/2 overflow-auto'>
-              
-                {/* Colapse Quick To How*/}
-                <CardCollapse title={'Quick How To'}>
-                  Ini Merupakan Sebuah Deskripsi
-                </CardCollapse>
+              {/* Colapse Quick To How*/}
+              <CardCollapse title={'Quick How To'}>
+                Ini Merupakan Sebuah Deskripsi
+              </CardCollapse>
 
-                {/*  Guidelines*/}
-                <CardCollapse title={'Guidelines'}>
-                  Ini Merupakan Sebuah Deskripsi
-                </CardCollapse>
+              {/*  Guidelines*/}
+              <CardCollapse title={'Guidelines'}>
+                Ini Merupakan Sebuah Deskripsi
+              </CardCollapse>
 
-                {/* Paper Data */}
-                {DataPaper.sections.map((data: Section, idx: number) => {
-                  return (
-                    <div key={idx} className=''>
-                      {data.selected_sentences.length != 0 ? (
-                        <Card title={data.section_name}>
-                          {data.selected_sentences.map((sen) => {
-                            return sen.sentences.map((item, idx) => {
-                              return (
-                                <>
-                                  {idx == 0 ? (
-                                    <>
-                                      <Sentence data={sen.sentences[idx]} />
-                                      <p>a</p>
-                                      {/* <Sentence data={sen.sentences[idx + 1]} /> */}
-                                      <div className='flex flex-wrap'>
-                                        {Tag.map((tag, index) => {
-                                          return (
-                                            <Radio
-                                              key={index}
-                                              data={tag}
-                                              sentence={item}
-                                              dataName={sen.sentences[idx].sent}
-                                            />
-                                          );
-                                        })}
-                                      </div>
-                                    </>
-                                  ) : idx == sen.sentences.length - 1 ? (
-                                    <>
-                                      {/* <Sentence data={sen.sentences[idx - 1]} /> */}
-                                      <Sentence data={sen.sentences[idx]} />
-                                      <p>b</p>
-                                      {/* <Sentence data={sen.sentences[idx + 1]} /> */}
-                                      <div className='flex flex-wrap'>
-                                        {Tag.map((tag, index) => {
-                                          return (
-                                            <Radio
-                                              key={index}
-                                              data={tag}
-                                              sentence={item}
-                                              dataName={sen.sentences[idx].sent}
-                                            />
-                                          );
-                                        })}
-                                      </div>
-                                    </>
-                                  ) : (
-                                    <>
-                                      {/* <Sentence data={sen.sentences[idx-1]} /> */}
-                                      <Sentence data={sen.sentences[idx]} />
-                                      <p>c</p>
-                                      <div className='flex flex-wrap'>
-                                        {Tag.map((tag, index) => {
-                                          return (
-                                            <Radio
-                                              key={index}
-                                              data={tag}
-                                              sentence={item}
-                                              dataName={sen.sentences[idx].sent}
-                                            />
-                                          );
-                                        })}
-                                      </div>
-                                    </>
-                                  )}
-                                </>
-                              );
-                            });
-                          })}
-                        </Card>
-                      ) : (
-                        ''
-                      )}
-                    </div>
-                  );
-                })}
+              {/* Paper Data */}
+              <Card title={Sections[numberSection].section_name}>
+                {Sections[numberSection].selected_sentences.map(
+                  (selected: selectedSentence) => {
+                    return selected.sentences.map((item, index, element) => {
+                      if (index == 0) {
+                        return (
+                          <>
+                            <Sentence data={item} />
+                            {element.length > 1 ? (
+                              <Sentence data={element[index + 1]} />
+                            ) : (
+                              ''
+                            )}
+                            <div className='flex flex-wrap'>
+                              {Tag.map((tag, index) => {
+                                return (
+                                  <Radio
+                                    key={index}
+                                    data={tag}
+                                    sentence={item}
+                                    dataName={item.sent}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </>
+                        );
+                      } else if (index == selected.sentences.length - 1) {
+                        return (
+                          <>
+                            <Sentence data={element[index - 1]} />
+                            <Sentence data={item} />
+                            <div className='flex flex-wrap'>
+                              {Tag.map((tag, index) => {
+                                return (
+                                  <Radio
+                                    key={index}
+                                    data={tag}
+                                    sentence={item}
+                                    dataName={item.sent}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </>
+                        );
+                      } else {
+                        return (
+                          <>
+                            <Sentence data={element[index - 1]} />
+                            <Sentence data={item} />
+                            <Sentence data={element[index + 1]} />
+                            <div className='flex flex-wrap'>
+                              {Tag.map((tag, index) => {
+                                return (
+                                  <Radio
+                                    key={index}
+                                    data={tag}
+                                    sentence={item}
+                                    dataName={item.sent}
+                                  />
+                                );
+                              })}
+                            </div>
+                          </>
+                        );
+                      }
+                    });
+                  }
+                )}
+              </Card>
 
-                <div className='flex justify-between my-10'>
-                  <button className='btn btn-primary'>PREV</button>
-                  <button className='btn'>NEXT</button>
-                </div>
+              <div className='flex justify-between my-10'>
+                <button
+                  className='btn btn-primary'
+                  onClick={() => setNumberSection(numberSection - 1)}
+                >
+                  PREV
+                </button>
+                <button
+                  className='btn'
+                  onClick={() => setNumberSection(numberSection + 1)}
+                >
+                  NEXT
+                </button>
+              </div>
             </div>
           </div>
         </div>
