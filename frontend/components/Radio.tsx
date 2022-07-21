@@ -1,4 +1,5 @@
 import { FC, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { tagColor } from '../data/tag';
 import { Sentence } from '../types/paper';
 
@@ -34,8 +35,9 @@ const Radio: FC<Radio> = ({ data, sentence, dataName }) => {
         <input
           type='radio'
           className={`radio`}
-          checked={isChecked}
+          // checked={isChecked}
           name={dataName}
+          
         />
         <span className='label-text ml-2'>
           <div className={`badge badge-${data.color}`}>{data.tag}</div>
