@@ -4,33 +4,44 @@ import (
 	"backend/utils"
 	"bytes"
 	"crypto/tls"
+	"io"
+	"io/ioutil"
 	"log"
-	"mime/multipart"
 	"net/http"
 	"os"
+	"strings"
 
+	"github.com/go-resty/resty/v2"
 	"github.com/labstack/echo/v4"
 )
 
-func ArtuAzController(c echo.Context) error {
-	result, status := utils.ExtractClaims(c)
+const (
+	URL         = "https://ir-group.ec.tuwien.ac.at/artu_az_identification/identify_az"
+	ContentType = "multipart/form-data"
+	//FileName    = "test1.pdf"
+	// paper_id string
+	// pdf_article file
+)
+
+func AzArtuController(c echo.Context) error {
+	_, status := utils.ExtractClaims(c)
 	if !status {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!"))
 	}
 
 	name := c.FormValue("paper_id")
-	file, err := c.FormFile("pdf_article")
+	fileUpload, err := c.FormFile("pdf_article")
 	if err != nil {
-		return err
-	}
-	src, err := file.Open()
-	if err != nil {
-		return err
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile"))
 	}
 
+	src, err := fileUpload.Open()
+	if err != nil {
+		return err
+	}
 	defer src.Close()
-	srcFile := os.TempDir() + file.Filename
-	// Destination
+
+	srcFile := os.TempDir() + fileUpload.Filename
 	dst, err := os.Create(srcFile)
 	if err != nil {
 		return err
@@ -38,42 +49,47 @@ func ArtuAzController(c echo.Context) error {
 	defer dst.Close()
 	defer os.Remove(srcFile)
 
-	if name == "" || file == nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Please put all form data!"))
+	// Copy
+	if _, err = io.Copy(dst, src); err != nil {
+		return err
 	}
 
-	bodyBuf := &bytes.Buffer{}
-	bodyWriter := multipart.NewWriter(bodyBuf)
+	// Read file
+	fileBytes, err := ioutil.ReadFile(srcFile)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+	log.Println("-------------------------------- fileBytes:", fileUpload)
 
-	// outbound
+	client := resty.New()
+	client.SetDisableWarn(true)
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
-	hc := http.Client{Transport: tr}
+	client.SetTransport(tr)
+	resp, err := client.R().
+		SetMultipartFields(
+			&resty.MultipartField{
+				Param:       "pdf_article",
+				FileName:    srcFile,
+				ContentType: "application/pdf",
+				Reader:      bytes.NewReader(fileBytes),
+			},
+			&resty.MultipartField{
+				Param:       "paper_id",
+				FileName:    "",
+				ContentType: "text/plain",
+				Reader:      strings.NewReader(name),
+			}).
+		SetContentLength(true).
+		Post(URL)
 
-	// form := url.Values{}
-	// form.Add("paper_id", name)
-	// form.Add("pdf_article", srcFile)
-	bodyWriter.CreateFormFile("paper_id", name)
-	bodyWriter.CreateFormFile("pdf_article", srcFile)
-	bodyWriter.FormDataContentType()
-	log.Println("-------- loading set up request")
-	log.Println(bodyBuf)
-	//b := bytes.NewBufferString(bodyBuf)
-	req, err := http.NewRequest(http.MethodPost, "https://ir-group.ec.tuwien.ac.at/artu_az_identification/identify_az", bodyBuf)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Config Outbound Error!"))
+		log.Fatal(err.Error())
 	}
-	req.Header.Add("Content-Type", "multipart/form-data")
-	log.Println("-------- loading hit outbond")
-
-	resp, err := hc.Do(req)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Server Outbound Error!", err))
+	log.Println(string(resp.Body()))
+	if resp.StatusCode() != http.StatusOK {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseSuccess("Failed", nil))
 	}
-	if resp.StatusCode != 200 {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError(resp.Status, err))
-	}
-
-	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", result))
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", string(resp.Body())))
 }
