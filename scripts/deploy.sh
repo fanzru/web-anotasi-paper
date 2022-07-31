@@ -1,6 +1,5 @@
 #!/bin/sh
 set -e
-cd ..
 echo "Deploying application ..."
 
 echo "Update codebase..."
