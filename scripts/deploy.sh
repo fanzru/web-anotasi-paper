@@ -3,6 +3,7 @@ set -e
 echo "Deploying application ..."
 
 echo "Update codebase..."
+cd ~/skripsi/web-anotasi-paper
 git fetch origin main
 git reset --hard origin/main
 
