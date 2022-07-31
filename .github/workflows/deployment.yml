@@ -30,11 +30,11 @@ jobs:
         run: yarn install
       - name: Trying to Build
         run: yarn build
-  DeployFrontend:
+  Deploy:
     needs: [Build-Check-Frontend, Build-Check-Backend]
     runs-on: ubuntu-latest
     env:
-      FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/frontend/scripts
+      FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/scripts
     steps:
       - uses: actions/checkout@v3
       - name: Preparing to deploy to production 🚀🤘
@@ -45,10 +45,7 @@ jobs:
           PORT: ${{ secrets.PORT }}
           PASSWORD: ${{ secrets.PASSWORD }}
           script: |
-            cd ~/skripsi/web-anotasi-paper/frontend/scripts
-            chmod +x deploy.sh
-            ./deploy.sh
-            cd ~/skripsi/web-anotasi-paper/backend/scripts
+            cd ~/skripsi/web-anotasi-paper/scripts
             chmod +x deploy.sh
             ./deploy.sh
             
