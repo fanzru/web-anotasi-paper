@@ -10,6 +10,7 @@ git reset --hard origin/main
 echo "========================= BACK END ========================="
 
 echo "Go to backend folder..."
+cd ..
 cd backend
 
 echo "Installing dependencies 🛠"
