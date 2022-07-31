@@ -10,8 +10,7 @@ git reset --hard origin/main
 echo "========================= BACK END ========================="
 
 echo "Go to backend folder..."
-cd ..
-cd backend
+cd ~/skripsi/web-anotasi-paper/backend
 
 echo "Installing dependencies 🛠"
 go mod tidy
@@ -24,8 +23,7 @@ echo "Deploying Backend Application Successfully Yeayyyy ......."
 echo "========================= FRONT END ========================="
 
 echo "Go to frontend folder..."
-cd ..
-cd frontend
+cd ~/skripsi/web-anotasi-paper/frontend
 
 echo "Installing dependencies 🛠"
 yarn install
