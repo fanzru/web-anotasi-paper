@@ -41,7 +41,7 @@ func AzArtuController(c echo.Context) error {
 	}
 	defer src.Close()
 
-	srcFile := os.TempDir() + fileUpload.Filename
+	srcFile := "./temp/" + fileUpload.Filename
 	dst, err := os.Create(srcFile)
 	if err != nil {
 		return err
