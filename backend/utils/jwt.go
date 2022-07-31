@@ -21,7 +21,7 @@ type Claims struct {
 
 func JwtGenerator(id int64, name string, email string, key string) string {
 	//Generate Token JWT for auth
-	expirationTime := time.Now().Add(time.Minute * 5)
+	expirationTime := time.Now().Add(time.Hour * 24)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 		Id:    id,
 		Name:  name,
@@ -51,6 +51,7 @@ func ExtractClaims(c echo.Context) (jwt.Claims, bool) {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
 	var jwtKey = []byte(os.Getenv("JWT_TOKEN"))
 
 	claims := &Claims{}
@@ -68,6 +69,7 @@ func ExtractClaims(c echo.Context) (jwt.Claims, bool) {
 		return nil, false
 	}
 }
+
 func CustomeMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {

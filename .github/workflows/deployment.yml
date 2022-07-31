@@ -10,10 +10,10 @@ jobs:
       run:
         working-directory: "./backend"
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
         with:
-          node-version: 14
+          go-version: '>=1.17.0'
       - name: Installing Dependencies
         run: go mod tidy
   Build-Check-Frontend:
@@ -22,21 +22,21 @@ jobs:
       run:
         working-directory: "./frontend"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
       - name: Installing Dependencies
         run: yarn install
       - name: Trying to Build
         run: yarn build
   DeployFrontend:
-    needs: Build-Check-Frontend
+    needs: [Build-Check-Frontend, Build-Check-Backend]
     runs-on: ubuntu-latest
     env:
       FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/frontend/scripts
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Preparing to deploy to production 🚀🤘
         uses: appleboy/ssh-action@master
         with:
@@ -48,21 +48,7 @@ jobs:
             cd ~/skripsi/web-anotasi-paper/frontend/scripts
             chmod +x deploy.sh
             ./deploy.sh
-  DeployBackend:
-    needs: DeployFrontend
-    runs-on: ubuntu-latest
-    env:
-      FOLDER_NAME: /Users/fanzru/skripsi/web-anotasi-paper/backend/scripts
-    steps:
-      - uses: actions/checkout@v2
-      - name: Preparing to deploy to production 🚀🤘
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          PORT: ${{ secrets.PORT }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          script: |
             cd ~/skripsi/web-anotasi-paper/backend/scripts
             chmod +x deploy.sh
             ./deploy.sh
+            

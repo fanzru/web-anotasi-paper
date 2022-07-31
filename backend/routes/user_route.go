@@ -11,7 +11,7 @@ func UserRoutes(e *echo.Echo) *echo.Echo {
 	// 	SigningKey: []byte("secret"),
 	// })
 
-	g := e.Group("/api/user")
+	g := e.Group("/user")
 	// customMiddleware := utils.CustomeMiddleware()
 	g.POST("/register", controllers.RegisterController)
 	g.POST("/login", controllers.LoginController)
