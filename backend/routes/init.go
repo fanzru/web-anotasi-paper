@@ -10,7 +10,7 @@ func Init() *echo.Echo {
 
 	//routes controller
 	e = UserRoutes(e)
-
+	e = TuwienRoutes(e)
 	// middleware buat models
 	e.Debug = true
 	e.Use(middleware.CORS())
