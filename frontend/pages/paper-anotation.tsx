@@ -65,7 +65,7 @@ const PaperAnotation: NextPage = () => {
     <>
       <Layout>
         <div className='flex justify-center h-screen'>
-          <div className='flex max-width-component mt-24 w-full px-5'>
+          <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5'>
             <div className='md:w-1/2 w-full max-h-[880px] border-2 border-gray-300 rounded-lg mb-6 md:mr-4 overflow-hidden'>
               <div className='w-full h-[50px] bg-gray-100 flex items-center px-5 rounded-t-lg font-medium'>
                 PDF Viewer
