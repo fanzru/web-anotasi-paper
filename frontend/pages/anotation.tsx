@@ -5,44 +5,49 @@ import { FileUploader } from 'react-drag-drop-files';
 import { changePaperData } from '../redux/paperSlice';
 import axios from 'axios';
 import * as https from 'https';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRouter } from 'next/router';
 import Card from '../components/Card';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
+import Cookies from 'universal-cookie';
+import { changePdfData, selectPdfValue } from '@/redux/pdfSlice';
 
 const Annotation = () => {
   const router = useRouter();
+  const cookie = new Cookies();
+  const token = cookie.get('token');
   const dispatch = useDispatch();
   const [file, setFile] = useState<File>();
   const [url, setUrl] = useState('');
+  const fileTypes = ['CSV', 'PDF'];
   const [category, setCategory] = useState('');
   const [domain, setDomain] = useState('');
-  const fileTypes = ['CSV', 'PDF'];
   const [isSetFile, SetIsSetFile] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [paperValue, setPaperValue] = useState({
     paperId: '',
     fileName: '',
   });
-
+  const pdfValue = useSelector(selectPdfValue);
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const handleChange = (file: any) => {
     SetIsSetFile(true);
     setFile(file);
-    setUrl(URL.createObjectURL(file));
+    // setUrl(URL.createObjectURL(file));
+    dispatch(changePdfData(URL.createObjectURL(file)));
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setIsLoading(true);
 
-    const agent = new https.Agent({
-      rejectUnauthorized: false,
-      minVersion: 'TLSv1',
-    });
+    // const agent = new https.Agent({
+    //   rejectUnauthorized: false,
+    //   minVersion: 'TLSv1',
+    // });
 
     var bodyFormData = new FormData();
     bodyFormData.append('paper_id', 'paper_identifier');
@@ -50,17 +55,13 @@ const Annotation = () => {
 
     axios({
       method: 'POST',
-      url: 'https://ir-group.ec.tuwien.ac.at/artu_az_identification/identify_az',
+      url: 'https://riset.fanzru.dev/api/tuwien/artu-az',
       data: bodyFormData,
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Access-Control-Allow-Origin': '*',
-      },
-      httpsAgent: agent,
+      headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        dispatch(changePaperData(res.data));
-        router.push('/paper-annotation');
+        dispatch(changePaperData(res.data.value));
+        router.push('/paper-anotation');
         setIsLoading(false);
       })
       .catch((e) => {
@@ -86,10 +87,10 @@ const Annotation = () => {
                   PDF Viewer
                 </div>
                 <div className='p-5 h-full'>
-                  {url ? (
+                  {pdfValue ? (
                     <Viewer
                       // fileUrl={'/dummyExample.pdf'}
-                      fileUrl={url}
+                      fileUrl={pdfValue}
                       plugins={[defaultLayoutPluginInstance]}
                       defaultScale={SpecialZoomLevel.PageFit}
                     />
