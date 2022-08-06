@@ -19,3 +19,12 @@ type DataPaper struct {
 	PaperId  string    `json:"paper_id"`
 	Sections []Section `json:"sections"`
 }
+
+type ArtuAzDataPaper struct {
+	UserId      int64  `json:"user_id" gorm:"user_id"`
+	PaperId     string `json:"paper_id" gorm:"paper_id"`
+	SectionName string `json:"section_name" gorm:"section_name"`
+	ParId       int64  `json:"par_id" gorm:"par_id"`
+	Sent        string `json:"sent" gorm:"sent"`
+	Tag         string `json:"tag" gorm:"tag"`
+}

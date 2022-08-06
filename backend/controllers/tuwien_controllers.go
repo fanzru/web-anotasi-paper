@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"backend/config"
 	"backend/models"
 	"backend/utils"
 	"bytes"
@@ -8,7 +9,6 @@ import (
 	"encoding/json"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -88,7 +88,7 @@ func AzArtuController(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("client resty error", http.StatusInternalServerError))
 	}
-	log.Println("response code : ", resp.StatusCode)
+
 	responseResult := models.DataPaper{}
 	err = json.Unmarshal(resp.Body(), &responseResult)
 	if err != nil {
@@ -98,4 +98,44 @@ func AzArtuController(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Failed", http.StatusInternalServerError))
 	}
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", responseResult))
+}
+
+func SavedArtuAzController(c echo.Context) error {
+	user, status := utils.ExtractClaims(c)
+	if !status {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	}
+
+	modelsPaper := &models.DataPaper{}
+	err := c.Bind(modelsPaper)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
+	}
+	artuAzDataPaper := []models.ArtuAzDataPaper{}
+
+	for _, v := range modelsPaper.Sections {
+		for _, v2 := range v.SelectedSentences {
+			for _, v3 := range v2.Sentences {
+				artuAzDataPaper = append(artuAzDataPaper, models.ArtuAzDataPaper{
+					UserId:      user.Id,
+					PaperId:     modelsPaper.PaperId,
+					SectionName: v.SectionName,
+					ParId:       v2.ParId,
+					Sent:        v3.Sent,
+					Tag:         v3.Tag,
+				})
+			}
+		}
+	}
+	db, err := config.ConnectionDatabase()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
+	}
+
+	res := db.CreateInBatches(artuAzDataPaper, 100)
+	if res.RowsAffected == 0 {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Failed Insert", http.StatusInternalServerError))
+	}
+
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", artuAzDataPaper))
 }
