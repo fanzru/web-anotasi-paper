@@ -14,5 +14,6 @@ func TuwienRoutes(e *echo.Echo) *echo.Echo {
 	g := e.Group("/tuwien")
 	// customMiddleware := utils.CustomeMiddleware()
 	g.POST("/artu-az", controllers.AzArtuController)
+	g.POST("/artu-az/saved", controllers.SavedArtuAzController)
 	return e
 }

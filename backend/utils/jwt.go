@@ -38,7 +38,7 @@ func JwtGenerator(id int64, name string, email string, key string) string {
 	return tokenString
 }
 
-func ExtractClaims(c echo.Context) (jwt.Claims, bool) {
+func ExtractClaims(c echo.Context) (*Claims, bool) {
 	if c.Request().Header.Get("Authorization") == "" {
 		return nil, false
 	}
