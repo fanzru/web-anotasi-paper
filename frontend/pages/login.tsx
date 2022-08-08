@@ -47,13 +47,13 @@ const Login = () => {
     }
   });
 
-  useEffect(() => {
-    const checkValidate = async () => {
-      if (!authToken) return router.push('/login');
-      if (await isTokenValid()) return router.push('/paper-anotation');
-    };
-    checkValidate();
-  }, []);
+  // useEffect(() => {
+  //   const checkValidate = async () => {
+  //     if (!authToken) return router.push('/login');
+  //     if (await isTokenValid()) return router.push('/paper-anotation');
+  //   };
+  //   checkValidate();
+  // }, []);
 
   return (
     <div className='h-screen flex items-center justify-center'>

@@ -16,10 +16,9 @@ import DataPaper2 from '@/data/dummy_az_paper2';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
-import { dataPaper } from '@/types/paper';
 import { selectPdfValue } from '@/redux/pdfSlice';
 
 const PaperAnotation: NextPage = () => {
@@ -38,11 +37,8 @@ const PaperAnotation: NextPage = () => {
       (section) => section.selected_sentences.length > 0
     );
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const methods = useForm();
+  const { handleSubmit } = methods;
 
   const TesSubmit = handleSubmit(async (data) => {
     console.log(data);
@@ -86,196 +82,110 @@ const PaperAnotation: NextPage = () => {
               </CardCollapse>
 
               {/* Paper Data */}
-              <form onSubmit={TesSubmit}>
-                <Card title={Sections && Sections[numberSection].section_name}>
-                  {Sections &&
-                    Sections[numberSection].selected_sentences.map(
-                      (selected: selectedSentence, indexSelected) => {
-                        return selected.sentences.map(
-                          (item, index, element) => {
-                            if (index == 0) {
-                              return (
-                                <>
-                                  <div key={index}>
-                                    <Sentence data={item} colored />
-                                    {element.length > 1 ? (
-                                      <Sentence data={element[index + 1]} />
-                                    ) : (
-                                      ''
-                                    )}
-                                    <div className='flex flex-wrap'>
-                                      {Tag.map((tag, idx) => {
-                                        let badgeColor;
-
-                                        if (tag.color == 'warning') {
-                                          badgeColor = 'badge-warning';
-                                        } else if (tag.color == 'info') {
-                                          badgeColor = 'badge-info';
-                                        } else if (tag.color == 'primary') {
-                                          badgeColor = 'badge-primary';
-                                        } else if (tag.color == 'success') {
-                                          badgeColor = 'badge-success';
-                                        } else if (tag.color == 'accent') {
-                                          badgeColor = 'badge-accent';
-                                        } else if (tag.color == 'neutral') {
-                                          badgeColor = 'badge-neutral';
-                                        } else {
-                                          badgeColor = 'badge-error';
-                                        }
-                                        return (
-                                          <div
-                                            className='form-control'
-                                            key={idx}
-                                          >
-                                            <label className='label cursor-pointer'>
-                                              <input
-                                                type='radio'
-                                                className={`radio`}
-                                                value={tag.tag}
-                                                defaultChecked={
-                                                  tag.tag == item.tag
-                                                }
-                                                {...register(
-                                                  `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                                )}
+              <FormProvider {...methods}>
+                <form onSubmit={TesSubmit}>
+                  <Card
+                    title={Sections && Sections[numberSection].section_name}
+                  >
+                    {Sections &&
+                      Sections[numberSection].selected_sentences.map(
+                        (selected: selectedSentence, indexSelected) => {
+                          return selected.sentences.map(
+                            (item, index, element) => {
+                              if (index == 0) {
+                                return (
+                                  <>
+                                    <div key={index}>
+                                      <Sentence data={item} colored />
+                                      {element.length > 1 ? (
+                                        <Sentence data={element[index + 1]} />
+                                      ) : (
+                                        ''
+                                      )}
+                                      <div className='flex flex-wrap'>
+                                        {Tag.map((tag, idx) => {
+                                          return (
+                                            <div
+                                              className='form-control'
+                                              key={idx}
+                                            >
+                                              <Radio
+                                                data={tag}
+                                                sentence={item}
+                                                dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
                                               />
-                                              <span className='label-text ml-2'>
-                                                <div
-                                                  className={`badge badge-${tag.color}`}
-                                                >
-                                                  {tag.tag}
-                                                </div>
-                                              </span>
-                                            </label>
-                                          </div>
-                                        );
-                                      })}
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div className='divider'></div>
-                                </>
-                              );
-                            } else if (index == selected.sentences.length - 1) {
-                              return (
-                                <div key={index}>
-                                  <Sentence data={element[index - 1]} />
-                                  <Sentence data={item} colored />
-                                  <div className='flex flex-wrap'>
-                                    {Tag.map((tag, idx) => {
-                                      let badgeColor;
-
-                                      if (tag.color == 'warning') {
-                                        badgeColor = 'badge-warning';
-                                      } else if (tag.color == 'info') {
-                                        badgeColor = 'badge-info';
-                                      } else if (tag.color == 'primary') {
-                                        badgeColor = 'badge-primary';
-                                      } else if (tag.color == 'success') {
-                                        badgeColor = 'badge-success';
-                                      } else if (tag.color == 'accent') {
-                                        badgeColor = 'badge-accent';
-                                      } else if (tag.color == 'neutral') {
-                                        badgeColor = 'badge-neutral';
-                                      } else {
-                                        badgeColor = 'badge-error';
-                                      }
-                                      return (
-                                        <div className='form-control' key={idx}>
-                                          <label className='label cursor-pointer'>
-                                            <input
-                                              type='radio'
-                                              className={`radio`}
-                                              value={tag.tag}
-                                              defaultChecked={
-                                                tag.tag == item.tag
-                                              }
-                                              {...register(
-                                                `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                              )}
-                                            />
-                                            <span className='label-text ml-2'>
-                                              <div
-                                                className={`badge badge-${tag.color}`}
-                                              >
-                                                {tag.tag}
-                                              </div>
-                                            </span>
-                                          </label>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              );
-                            } else {
-                              return (
-                                <>
+                                    <div className='divider'></div>
+                                  </>
+                                );
+                              } else if (
+                                index ==
+                                selected.sentences.length - 1
+                              ) {
+                                return (
                                   <div key={index}>
                                     <Sentence data={element[index - 1]} />
                                     <Sentence data={item} colored />
-                                    <Sentence data={element[index + 1]} />
                                     <div className='flex flex-wrap'>
                                       {Tag.map((tag, idx) => {
-                                        let badgeColor;
-
-                                        if (tag.color == 'warning') {
-                                          badgeColor = 'badge-warning';
-                                        } else if (tag.color == 'info') {
-                                          badgeColor = 'badge-info';
-                                        } else if (tag.color == 'primary') {
-                                          badgeColor = 'badge-primary';
-                                        } else if (tag.color == 'success') {
-                                          badgeColor = 'badge-success';
-                                        } else if (tag.color == 'accent') {
-                                          badgeColor = 'badge-accent';
-                                        } else if (tag.color == 'neutral') {
-                                          badgeColor = 'badge-neutral';
-                                        } else {
-                                          badgeColor = 'badge-error';
-                                        }
                                         return (
                                           <div
                                             className='form-control'
                                             key={idx}
                                           >
-                                            <label className='label cursor-pointer'>
-                                              <input
-                                                type='radio'
-                                                className={`radio`}
-                                                value={tag.tag}
-                                                defaultChecked={
-                                                  tag.tag == item.tag
-                                                }
-                                                {...register(
-                                                  `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                                )}
-                                              />
-                                              <span className='label-text ml-2'>
-                                                <div
-                                                  className={`badge badge-${tag.color}`}
-                                                >
-                                                  {tag.tag}
-                                                </div>
-                                              </span>
-                                            </label>
+                                            <Radio
+                                              data={tag}
+                                              sentence={item}
+                                              dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                            />
                                           </div>
                                         );
                                       })}
                                     </div>
                                   </div>
-                                  <div className='divider'></div>
-                                </>
-                              );
+                                );
+                              } else {
+                                return (
+                                  <>
+                                    <div key={index}>
+                                      <Sentence data={element[index - 1]} />
+                                      <Sentence data={item} colored />
+                                      <Sentence data={element[index + 1]} />
+                                      <div className='flex flex-wrap'>
+                                        {Tag.map((tag, idx) => {
+                                          return (
+                                            <div
+                                              className='form-control'
+                                              key={idx}
+                                            >
+                                              <Radio
+                                                data={tag}
+                                                sentence={item}
+                                                dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                              />
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
+                                    </div>
+                                    <div className='divider'></div>
+                                  </>
+                                );
+                              }
                             }
-                          }
-                        );
-                      }
-                    )}
-                </Card>
-                <button type='submit' className='btn'>
-                  Submit
-                </button>
-              </form>
+                          );
+                        }
+                      )}
+                  </Card>
+                  <button type='submit' className='btn'>
+                    Submit
+                  </button>
+                </form>
+              </FormProvider>
 
               <div className='flex justify-between my-10'>
                 <button
