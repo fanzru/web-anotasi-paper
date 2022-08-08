@@ -5,13 +5,10 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func ResponseError(message string, err ...error) echo.Map {
-	log.WithFields(log.Fields{
-		"omg":    true,
-		"number": 100,
-	}).Error(err)
+func ResponseError(message string, code int, err ...error) echo.Map {
+	log.Error(err)
 	return echo.Map{
-		"code":    400,
+		"code":    code,
 		"status":  false,
 		"message": message,
 	}

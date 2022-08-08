@@ -32,7 +32,7 @@ func MigrationDB() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = db.AutoMigrate(&models.User{})
+	err = db.AutoMigrate(&models.User{}, &models.ArtuAzDataPaper{})
 	if err != nil {
 		fmt.Println("Init DB failed")
 		return nil, err

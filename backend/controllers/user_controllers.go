@@ -16,36 +16,36 @@ import (
 func RegisterController(c echo.Context) error {
 	db, err := config.ConnectionDatabase()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
 	}
 
 	data := &models.User{}
 	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!", http.StatusInternalServerError))
 	}
 	err = utils.ValidateUser(data)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.ResponseError("Missing fields or data not valid!"))
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("Missing fields or data not valid!", http.StatusInternalServerError))
 	}
 
 	r := &models.User{}
 	rows := db.Where("email = ?", data.Email).First(r)
 	if rows.RowsAffected != 0 || r.Email == data.Email {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Already Exists"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Already Exists", http.StatusInternalServerError))
 	}
 
 	//hashing password
 	hash, err := bcrypt.GenerateFromPassword([]byte(data.Password), 5)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, utils.ResponseError("Error While Hashing Password!"))
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("Error While Hashing Password!", http.StatusInternalServerError))
 	}
 
 	data.Password = string(hash)
 
 	err = db.Create(data).Error
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Register Failed!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Register Failed!", http.StatusInternalServerError))
 	}
 
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", nil))
@@ -58,21 +58,21 @@ func LoginController(c echo.Context) error {
 	}
 	db, err := config.ConnectionDatabase()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
 	}
 
 	data := &models.UserBodyLogin{}
 	if err := c.Bind(&data); err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!", http.StatusInternalServerError))
 	}
 	result := &models.User{}
 	err = db.Where("email = ?", data.Email).First(&result).Error
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Not Found, Please Register First!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Not Found, Please Register First!", http.StatusInternalServerError))
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(data.Password))
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Wrong Password!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Wrong Password!", http.StatusInternalServerError))
 	}
 
 	result.Token = utils.JwtGenerator(result.Id, result.Name, result.Email, os.Getenv("JWT_TOKEN"))
@@ -86,7 +86,7 @@ type Token struct {
 func UserProfileController(c echo.Context) error {
 	result, status := utils.ExtractClaims(c)
 	if !status {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!"))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
 	}
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", result))
 }
