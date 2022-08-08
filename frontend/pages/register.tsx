@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import { axiosInstance } from '../lib/axios';
 
 type Register = {
@@ -10,6 +11,7 @@ type Register = {
 };
 
 const Register = () => {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -17,18 +19,25 @@ const Register = () => {
   } = useForm<Register>();
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log(data);
-    const result = await axiosInstance
-      .post('/api/user/register', {
-        ...data,
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+    try {
+      const auth = await toast.promise(
+        axiosInstance.post('/api/user/register', {
+          ...data,
+        }),
+        {
+          pending: 'Loading..',
+          success: 'Login Success!',
+          error: 'Login Failed!',
+        }
+      );
 
-    console.log(result?.data.status);
+      if (auth?.data.status) {
+        router.push('/login');
+      }
+    } catch (e) {
+      console.log(e);
+    }
   });
-
 
   return (
     <div className='h-screen flex items-center justify-center'>

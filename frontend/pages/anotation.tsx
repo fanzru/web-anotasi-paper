@@ -13,6 +13,7 @@ import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import Cookies from 'universal-cookie';
 import { changePdfData, selectPdfValue } from '@/redux/pdfSlice';
+import { toast } from 'react-toastify';
 
 const Annotation = () => {
   const router = useRouter();
