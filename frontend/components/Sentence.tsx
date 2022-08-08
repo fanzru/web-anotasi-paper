@@ -4,9 +4,10 @@ import { Sentence } from '../types/paper';
 
 interface Sen {
   data: Sentence;
+  colored?: Boolean
 }
 
-const Sentence: FC<Sen> = ({ data }) => {
+const Sentence: FC<Sen> = ({ data, colored }) => {
   let textColor;
 
   if (data.tag == 'Claim') {
@@ -25,7 +26,9 @@ const Sentence: FC<Sen> = ({ data }) => {
     textColor = 'bg-error';
   }
 
-  return <p className={textColor}>{data.sent}</p>;
+  return (
+    <span className={colored ? textColor : ''}>{data.sent}</span>
+  );
 };
 
 export default Sentence;

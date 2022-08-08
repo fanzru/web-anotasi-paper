@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
 import { axiosInstance } from '../lib/axios';
 import { isTokenValid } from '../lib/tokenValidate';
@@ -25,17 +26,21 @@ const Login = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const auth = await axiosInstance
-        .post('/api/user/login', {
+      toast.dismiss();
+      const auth = await toast.promise(
+        axiosInstance.post('/api/user/login', {
           ...data,
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+        }),
+        {
+          pending: 'Loading..',
+          success: 'Login Success!',
+          error: 'Login Failed!',
+        }
+      );
 
       if (auth?.data.status) {
         cookie.set('token', auth.data.value);
-        router.push('/paper-anotation');
+        router.push('/anotation');
       }
     } catch (e) {
       console.log(e);
