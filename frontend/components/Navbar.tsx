@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
@@ -40,7 +41,9 @@ const Navbar = () => {
             className='menu dropdown-content p-2 shadow bg-base-100 rounded-box w-52 mt-4'
           >
             <li>
-              <a>Profil</a>
+              <Link href={'/profile'}>
+                <a>Profil</a>
+              </Link>
             </li>
             <li onClick={Logout}>
               <a>Logout</a>

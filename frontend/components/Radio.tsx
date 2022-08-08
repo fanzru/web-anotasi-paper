@@ -1,15 +1,17 @@
-import { FC, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FC } from 'react';
+import { useFormContext } from 'react-hook-form';
 import { tagColor } from '../data/tag';
 import { Sentence } from '../types/paper';
 
 interface Radio {
   data: tagColor;
   sentence: Sentence;
-  dataName: string;
+  dataRegister: string;
 }
 
-const Radio: FC<Radio> = ({ data, sentence, dataName }) => {
+const Radio: FC<Radio> = ({ data, sentence, dataRegister }) => {
+  const methods = useFormContext();
+
   const isChecked = data.tag == sentence.tag ? true : false;
   let badgeColor;
 
@@ -35,9 +37,9 @@ const Radio: FC<Radio> = ({ data, sentence, dataName }) => {
         <input
           type='radio'
           className={`radio`}
-          // checked={isChecked}
-          name={dataName}
-          
+          value={data.tag}
+          defaultChecked={data.tag == sentence.tag}
+          {...methods.register(dataRegister)}
         />
         <span className='label-text ml-2'>
           <div className={`badge badge-${data.color}`}>{data.tag}</div>
