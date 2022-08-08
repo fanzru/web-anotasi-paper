@@ -187,23 +187,30 @@ const PaperAnotation: NextPage = () => {
                 </form>
               </FormProvider>
 
-              <div className='flex justify-between my-10'>
-                <button
-                  className={`btn btn-primary ${
-                    numberSection == 0 ? 'invisible' : ''
-                  }`}
-                  onClick={() => setNumberSection(numberSection - 1)}
-                >
-                  PREV
-                </button>
-                <button
-                  className={`btn ${
-                    numberSection == Sections?.length - 1 ? 'invisible' : ''
-                  }`}
-                  onClick={() => setNumberSection(numberSection + 1)}
-                >
-                  NEXT
-                </button>
+              <div className='flex justify-center my-10'>
+                <div className='btn-group grid grid-cols-3'>
+                  <button
+                    className={`btn ${
+                      numberSection == 0 ? 'btn-disabled' : ''
+                    }`}
+                    onClick={() => setNumberSection(numberSection - 1)}
+                  >
+                    Previous section
+                  </button>
+                  <button className='btn btn-primary'>
+                    {numberSection + 1} / {Sections?.length}
+                  </button>
+                  <button
+                    className={`btn ${
+                      numberSection == Sections?.length - 1
+                        ? 'btn-disabled'
+                        : ''
+                    }`}
+                    onClick={() => setNumberSection(numberSection + 1)}
+                  >
+                    Next section
+                  </button>
+                </div>
               </div>
             </div>
           </div>

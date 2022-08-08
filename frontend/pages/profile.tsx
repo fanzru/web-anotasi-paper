@@ -1,5 +1,6 @@
 import Card from '@/components/Card';
 import Layout from '@/components/Layout';
+import Link from 'next/link';
 
 const Profile = () => {
   return (
@@ -7,6 +8,27 @@ const Profile = () => {
       <div className='flex justify-center h-screen'>
         <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5 gap-5'>
           <div className='w-full md:w-1/3 flex flex-col'>
+            <div>
+              <Link href={'/paper-anotation'}>
+                <a className='btn btn-ghost group mb-5'>
+                  <svg
+                    xmlns='http://www.w3.org/2000/svg'
+                    className='h-6 w-6 -translate-x-2 group-hover:-translate-x-1 transition'
+                    fill='none'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                    stroke-width='2'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      d='M11 17l-5-5m0 0l5-5m-5 5h12'
+                    />
+                  </svg>
+                  <span>Kembali</span>
+                </a>
+              </Link>
+            </div>
             <p className='text-4xl mb-10'>Reva Doni Aprilio</p>
             <div className='h-24 w-24 bg-green-800 flex items-center justify-center rounded-full mb-5'>
               <p className='text-white text-4xl'>RE</p>
