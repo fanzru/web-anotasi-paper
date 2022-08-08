@@ -31,25 +31,12 @@ const PaperAnotation: NextPage = () => {
   const paperValue = useSelector(selectPaperValue);
 
   const pdfValue = useSelector(selectPdfValue);
-  const DataSections: dataPaper = JSON.parse(paperValue);
 
-  const Sections = DataSections.sections.filter(
-    (section) => section.selected_sentences.length > 0
-  );
-
-  type TesSentences = {
-    sentence: string[];
-  };
-
-  type TesSelectedSentences = {
-    selected_sentences: TesSentences[];
-  };
-
-  type TesForm = {
-    section_name: {
-      Abstract?: TesSelectedSentences;
-    };
-  };
+  const Sections =
+    paperValue &&
+    paperValue.sections?.filter(
+      (section) => section.selected_sentences.length > 0
+    );
 
   const {
     register,
@@ -89,6 +76,16 @@ const PaperAnotation: NextPage = () => {
             </div>
             <div className='md:w-1/2 w-full overflow-auto'>
               {/* Colapse Quick To How*/}
+              <Card title={'coba'}>
+                <button
+                  className='btn'
+                  onClick={() => {
+                    console.log(paperValue.paper_id);
+                  }}
+                >
+                  Tes
+                </button>
+              </Card>
               <CardCollapse title={'Quick How To'}>
                 Ini Merupakan Sebuah Deskripsi
               </CardCollapse>
@@ -100,175 +97,190 @@ const PaperAnotation: NextPage = () => {
 
               {/* Paper Data */}
               <form onSubmit={TesSubmit}>
-                <Card title={Sections[numberSection].section_name}>
-                  {Sections[numberSection].selected_sentences.map(
-                    (selected: selectedSentence, indexSelected) => {
-                      return selected.sentences.map((item, index, element) => {
-                        if (index == 0) {
-                          return (
-                            <>
-                              <div key={index}>
-                                <Sentence data={item} colored />
-                                {element.length > 1 ? (
-                                  <Sentence data={element[index + 1]} />
-                                ) : (
-                                  ''
-                                )}
-                                <div className='flex flex-wrap'>
-                                  {Tag.map((tag, idx) => {
-                                    let badgeColor;
+                <Card title={Sections && Sections[numberSection].section_name}>
+                  {Sections &&
+                    Sections[numberSection].selected_sentences.map(
+                      (selected: selectedSentence, indexSelected) => {
+                        return selected.sentences.map(
+                          (item, index, element) => {
+                            if (index == 0) {
+                              return (
+                                <>
+                                  <div key={index}>
+                                    <Sentence data={item} colored />
+                                    {element.length > 1 ? (
+                                      <Sentence data={element[index + 1]} />
+                                    ) : (
+                                      ''
+                                    )}
+                                    <div className='flex flex-wrap'>
+                                      {Tag.map((tag, idx) => {
+                                        let badgeColor;
 
-                                    if (tag.color == 'warning') {
-                                      badgeColor = 'badge-warning';
-                                    } else if (tag.color == 'info') {
-                                      badgeColor = 'badge-info';
-                                    } else if (tag.color == 'primary') {
-                                      badgeColor = 'badge-primary';
-                                    } else if (tag.color == 'success') {
-                                      badgeColor = 'badge-success';
-                                    } else if (tag.color == 'accent') {
-                                      badgeColor = 'badge-accent';
-                                    } else if (tag.color == 'neutral') {
-                                      badgeColor = 'badge-neutral';
-                                    } else {
-                                      badgeColor = 'badge-error';
-                                    }
-                                    return (
-                                      <div className='form-control' key={idx}>
-                                        <label className='label cursor-pointer'>
-                                          <input
-                                            type='radio'
-                                            className={`radio`}
-                                            value={tag.tag}
-                                            defaultChecked={tag.tag == item.tag}
-                                            {...register(
-                                              `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                            )}
-                                          />
-                                          <span className='label-text ml-2'>
-                                            <div
-                                              className={`badge badge-${tag.color}`}
-                                            >
-                                              {tag.tag}
-                                            </div>
-                                          </span>
-                                        </label>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                              <div className="divider"></div>
-                            </>
-                          );
-                        } else if (index == selected.sentences.length - 1) {
-                          return (
-                            <div key={index}>
-                              <Sentence data={element[index - 1]} />
-                              <Sentence data={item} colored />
-                              <div className='flex flex-wrap'>
-                                {Tag.map((tag, idx) => {
-                                  let badgeColor;
-
-                                  if (tag.color == 'warning') {
-                                    badgeColor = 'badge-warning';
-                                  } else if (tag.color == 'info') {
-                                    badgeColor = 'badge-info';
-                                  } else if (tag.color == 'primary') {
-                                    badgeColor = 'badge-primary';
-                                  } else if (tag.color == 'success') {
-                                    badgeColor = 'badge-success';
-                                  } else if (tag.color == 'accent') {
-                                    badgeColor = 'badge-accent';
-                                  } else if (tag.color == 'neutral') {
-                                    badgeColor = 'badge-neutral';
-                                  } else {
-                                    badgeColor = 'badge-error';
-                                  }
-                                  return (
-                                    <div className='form-control' key={idx}>
-                                      <label className='label cursor-pointer'>
-                                        <input
-                                          type='radio'
-                                          className={`radio`}
-                                          value={tag.tag}
-                                          defaultChecked={tag.tag == item.tag}
-                                          {...register(
-                                            `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                          )}
-                                        />
-                                        <span className='label-text ml-2'>
+                                        if (tag.color == 'warning') {
+                                          badgeColor = 'badge-warning';
+                                        } else if (tag.color == 'info') {
+                                          badgeColor = 'badge-info';
+                                        } else if (tag.color == 'primary') {
+                                          badgeColor = 'badge-primary';
+                                        } else if (tag.color == 'success') {
+                                          badgeColor = 'badge-success';
+                                        } else if (tag.color == 'accent') {
+                                          badgeColor = 'badge-accent';
+                                        } else if (tag.color == 'neutral') {
+                                          badgeColor = 'badge-neutral';
+                                        } else {
+                                          badgeColor = 'badge-error';
+                                        }
+                                        return (
                                           <div
-                                            className={`badge badge-${tag.color}`}
+                                            className='form-control'
+                                            key={idx}
                                           >
-                                            {tag.tag}
+                                            <label className='label cursor-pointer'>
+                                              <input
+                                                type='radio'
+                                                className={`radio`}
+                                                value={tag.tag}
+                                                defaultChecked={
+                                                  tag.tag == item.tag
+                                                }
+                                                {...register(
+                                                  `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
+                                                )}
+                                              />
+                                              <span className='label-text ml-2'>
+                                                <div
+                                                  className={`badge badge-${tag.color}`}
+                                                >
+                                                  {tag.tag}
+                                                </div>
+                                              </span>
+                                            </label>
                                           </div>
-                                        </span>
-                                      </label>
+                                        );
+                                      })}
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        } else {
-                          return (
-                            <>
-                              <div key={index}>
-                                <Sentence data={element[index - 1]} />
-                                <Sentence data={item} colored />
-                                <Sentence data={element[index + 1]} />
-                                <div className='flex flex-wrap'>
-                                  {Tag.map((tag, idx) => {
-                                    let badgeColor;
+                                  </div>
+                                  <div className='divider'></div>
+                                </>
+                              );
+                            } else if (index == selected.sentences.length - 1) {
+                              return (
+                                <div key={index}>
+                                  <Sentence data={element[index - 1]} />
+                                  <Sentence data={item} colored />
+                                  <div className='flex flex-wrap'>
+                                    {Tag.map((tag, idx) => {
+                                      let badgeColor;
 
-                                    if (tag.color == 'warning') {
-                                      badgeColor = 'badge-warning';
-                                    } else if (tag.color == 'info') {
-                                      badgeColor = 'badge-info';
-                                    } else if (tag.color == 'primary') {
-                                      badgeColor = 'badge-primary';
-                                    } else if (tag.color == 'success') {
-                                      badgeColor = 'badge-success';
-                                    } else if (tag.color == 'accent') {
-                                      badgeColor = 'badge-accent';
-                                    } else if (tag.color == 'neutral') {
-                                      badgeColor = 'badge-neutral';
-                                    } else {
-                                      badgeColor = 'badge-error';
-                                    }
-                                    return (
-                                      <div className='form-control' key={idx}>
-                                        <label className='label cursor-pointer'>
-                                          <input
-                                            type='radio'
-                                            className={`radio`}
-                                            value={tag.tag}
-                                            defaultChecked={tag.tag == item.tag}
-                                            {...register(
-                                              `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                            )}
-                                          />
-                                          <span className='label-text ml-2'>
-                                            <div
-                                              className={`badge badge-${tag.color}`}
-                                            >
-                                              {tag.tag}
-                                            </div>
-                                          </span>
-                                        </label>
-                                      </div>
-                                    );
-                                  })}
+                                      if (tag.color == 'warning') {
+                                        badgeColor = 'badge-warning';
+                                      } else if (tag.color == 'info') {
+                                        badgeColor = 'badge-info';
+                                      } else if (tag.color == 'primary') {
+                                        badgeColor = 'badge-primary';
+                                      } else if (tag.color == 'success') {
+                                        badgeColor = 'badge-success';
+                                      } else if (tag.color == 'accent') {
+                                        badgeColor = 'badge-accent';
+                                      } else if (tag.color == 'neutral') {
+                                        badgeColor = 'badge-neutral';
+                                      } else {
+                                        badgeColor = 'badge-error';
+                                      }
+                                      return (
+                                        <div className='form-control' key={idx}>
+                                          <label className='label cursor-pointer'>
+                                            <input
+                                              type='radio'
+                                              className={`radio`}
+                                              value={tag.tag}
+                                              defaultChecked={
+                                                tag.tag == item.tag
+                                              }
+                                              {...register(
+                                                `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
+                                              )}
+                                            />
+                                            <span className='label-text ml-2'>
+                                              <div
+                                                className={`badge badge-${tag.color}`}
+                                              >
+                                                {tag.tag}
+                                              </div>
+                                            </span>
+                                          </label>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="divider"></div>
-                            </>
-                          );
-                        }
-                      });
-                    }
-                  )}
+                              );
+                            } else {
+                              return (
+                                <>
+                                  <div key={index}>
+                                    <Sentence data={element[index - 1]} />
+                                    <Sentence data={item} colored />
+                                    <Sentence data={element[index + 1]} />
+                                    <div className='flex flex-wrap'>
+                                      {Tag.map((tag, idx) => {
+                                        let badgeColor;
+
+                                        if (tag.color == 'warning') {
+                                          badgeColor = 'badge-warning';
+                                        } else if (tag.color == 'info') {
+                                          badgeColor = 'badge-info';
+                                        } else if (tag.color == 'primary') {
+                                          badgeColor = 'badge-primary';
+                                        } else if (tag.color == 'success') {
+                                          badgeColor = 'badge-success';
+                                        } else if (tag.color == 'accent') {
+                                          badgeColor = 'badge-accent';
+                                        } else if (tag.color == 'neutral') {
+                                          badgeColor = 'badge-neutral';
+                                        } else {
+                                          badgeColor = 'badge-error';
+                                        }
+                                        return (
+                                          <div
+                                            className='form-control'
+                                            key={idx}
+                                          >
+                                            <label className='label cursor-pointer'>
+                                              <input
+                                                type='radio'
+                                                className={`radio`}
+                                                value={tag.tag}
+                                                defaultChecked={
+                                                  tag.tag == item.tag
+                                                }
+                                                {...register(
+                                                  `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
+                                                )}
+                                              />
+                                              <span className='label-text ml-2'>
+                                                <div
+                                                  className={`badge badge-${tag.color}`}
+                                                >
+                                                  {tag.tag}
+                                                </div>
+                                              </span>
+                                            </label>
+                                          </div>
+                                        );
+                                      })}
+                                    </div>
+                                  </div>
+                                  <div className='divider'></div>
+                                </>
+                              );
+                            }
+                          }
+                        );
+                      }
+                    )}
                 </Card>
                 <button type='submit' className='btn'>
                   Submit
@@ -286,7 +298,7 @@ const PaperAnotation: NextPage = () => {
                 </button>
                 <button
                   className={`btn ${
-                    numberSection == Sections.length - 1 ? 'invisible' : ''
+                    numberSection == Sections?.length - 1 ? 'invisible' : ''
                   }`}
                   onClick={() => setNumberSection(numberSection + 1)}
                 >

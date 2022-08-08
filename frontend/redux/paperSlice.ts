@@ -1,19 +1,20 @@
+import { dataPaper } from '@/types/paper';
 import { createSlice } from '@reduxjs/toolkit';
 import { RootState } from './globalStore';
 
 const paperSlice = createSlice({
   name: 'paper',
   initialState: {
-    value: '',
+    value: {} as dataPaper,
   },
   reducers: {
-    changePaperData: (state, action) => {
+    changePaperValue: (state, action) => {
       state.value = action.payload;
     },
   },
 });
 
-export const { changePaperData } = paperSlice.actions;
+export const { changePaperValue } = paperSlice.actions;
 
 export const selectPaperValue = (state: RootState) => state.paper.value;
 

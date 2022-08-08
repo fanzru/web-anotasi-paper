@@ -2,7 +2,7 @@ import Layout from '../components/Layout';
 import DataArticle from '../data/article';
 import { ChangeEvent, useState } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
-import { changePaperData } from '../redux/paperSlice';
+import { changePaperValue, selectPaperValue } from '../redux/paperSlice';
 import axios from 'axios';
 import * as https from 'https';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,17 +20,17 @@ const Annotation = () => {
   const token = cookie.get('token');
   const dispatch = useDispatch();
   const [file, setFile] = useState<File>();
-  const [url, setUrl] = useState('');
   const fileTypes = ['CSV', 'PDF'];
   const [category, setCategory] = useState('');
   const [domain, setDomain] = useState('');
   const [isSetFile, SetIsSetFile] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [paperValue, setPaperValue] = useState({
-    paperId: '',
-    fileName: '',
-  });
+  // const [paperValue, setPaperValue] = useState({
+  //   paperId: '',
+  //   fileName: '',
+  // });
   const pdfValue = useSelector(selectPdfValue);
+
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const handleChange = (file: any) => {
@@ -60,8 +60,10 @@ const Annotation = () => {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
-        dispatch(changePaperData(res.data.value));
+        dispatch(changePaperValue(res.data.value));
         router.push('/paper-anotation');
+        // console.log(res.data.value);
+
         setIsLoading(false);
       })
       .catch((e) => {
