@@ -26,13 +26,7 @@ const Login = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // const auth = await axiosInstance
-      //   .post('/api/user/login', {
-      //     ...data,
-      //   })
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
+      toast.dismiss();
       const auth = await toast.promise(
         axiosInstance.post('/api/user/login', {
           ...data,

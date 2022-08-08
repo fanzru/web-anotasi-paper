@@ -8,12 +8,12 @@ const Navbar = () => {
 
   const Logout = async () => {
     cookie.remove('token');
-    toast.success('Berhasil Logout!')
+    toast.success('Berhasil Logout!');
     router.push('/login');
   };
 
   return (
-    <div className='navbar bg-base-300 px-5'>
+    <div className='navbar bg-base-300 px-5 fixed top-0'>
       <div className='flex-1'>
         <a className='btn btn-ghost normal-case text-lg'>Anotation Paper</a>
       </div>
