@@ -76,16 +76,6 @@ const PaperAnotation: NextPage = () => {
             </div>
             <div className='md:w-1/2 w-full overflow-auto'>
               {/* Colapse Quick To How*/}
-              <Card title={'coba'}>
-                <button
-                  className='btn'
-                  onClick={() => {
-                    console.log(paperValue.paper_id);
-                  }}
-                >
-                  Tes
-                </button>
-              </Card>
               <CardCollapse title={'Quick How To'}>
                 Ini Merupakan Sebuah Deskripsi
               </CardCollapse>
