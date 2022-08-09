@@ -11,6 +11,7 @@
     "@react-pdf-viewer/core": "3.6.0",
     "@react-pdf-viewer/default-layout": "^3.6.0",
     "@reduxjs/toolkit": "^1.8.2",
+    "@types/react-beforeunload": "^2.1.1",
     "axios": "^0.27.2",
     "clsx": "^1.1.1",
     "daisyui": "^2.22.0",

@@ -1,3 +1,4 @@
+import BeforeLoad from '@/components/BeforeLoad';
 import Layout from '@/components/Layout';
 import { selectPaperValue } from '@/redux/paperSlice';
 import Link from 'next/link';
@@ -10,6 +11,7 @@ const Profile = () => {
 
   return (
     <Layout>
+      <BeforeLoad />
       <div className='flex justify-center h-screen'>
         <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5 gap-5'>
           <div className='w-full md:w-1/3 flex flex-col'>
