@@ -1,15 +1,20 @@
-import Card from '@/components/Card';
 import Layout from '@/components/Layout';
+import { selectPaperValue } from '@/redux/paperSlice';
 import Link from 'next/link';
+import { useSelector } from 'react-redux';
 
 const Profile = () => {
+  const paperValue = useSelector(selectPaperValue);
+  const backPath =
+    Object.keys(paperValue).length === 0 ? '/anotation' : '/paper-anotation';
+
   return (
     <Layout>
       <div className='flex justify-center h-screen'>
         <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5 gap-5'>
           <div className='w-full md:w-1/3 flex flex-col'>
             <div>
-              <Link href={'/paper-anotation'}>
+              <Link href={backPath}>
                 <a className='btn btn-ghost group mb-5'>
                   <svg
                     xmlns='http://www.w3.org/2000/svg'
@@ -29,9 +34,9 @@ const Profile = () => {
                 </a>
               </Link>
             </div>
-            <p className='text-4xl mb-10'>Reva Doni Aprilio</p>
+            <p className='text-4xl mb-10'>John Doe</p>
             <div className='h-24 w-24 bg-green-800 flex items-center justify-center rounded-full mb-5'>
-              <p className='text-white text-4xl'>RE</p>
+              <p className='text-white text-4xl'>JO</p>
             </div>
             <div className='form-control w-full max-w-xs'>
               <label className='label'>
