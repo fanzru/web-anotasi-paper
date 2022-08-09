@@ -20,6 +20,8 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { selectPdfValue } from '@/redux/pdfSlice';
+import { Beforeunload, useBeforeunload } from 'react-beforeunload';
+import BeforeLoad from '@/components/BeforeLoad';
 
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState<number>(0);
@@ -44,17 +46,19 @@ const PaperAnotation: NextPage = () => {
     console.log(data);
   });
 
-  const tes = async () => {
+  const Check = async () => {
+    if (Object.keys(paperValue).length === 0) return router.push('/anotation');
     if (!authToken) return router.push('/login');
     if (await isTokenValid()) return router.push('/paper-anotation');
   };
 
   useEffect(() => {
-    tes();
+    Check();
   }, []);
 
   return (
     <>
+      <BeforeLoad />
       <Layout>
         <div className='flex justify-center h-screen'>
           <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5'>
@@ -63,11 +67,17 @@ const PaperAnotation: NextPage = () => {
                 PDF Viewer
               </div>
               <div className='p-5 h-full'>
-                <Viewer
-                  fileUrl={pdfValue}
-                  plugins={[defaultLayoutPluginInstance]}
-                  defaultScale={SpecialZoomLevel.PageFit}
-                />
+                {pdfValue ? (
+                  <Viewer
+                    fileUrl={pdfValue}
+                    plugins={[defaultLayoutPluginInstance]}
+                    defaultScale={SpecialZoomLevel.PageFit}
+                  />
+                ) : (
+                  <div className='flex justify-center items-center h-full'>
+                    <p>Preview PDF</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className='md:w-1/2 w-full overflow-auto'>
