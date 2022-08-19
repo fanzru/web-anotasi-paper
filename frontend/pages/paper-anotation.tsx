@@ -191,25 +191,29 @@ const PaperAnotation: NextPage = () => {
                         }
                       )}
                   </Card>
-                  <button type='submit' className='btn'>
+                  {/* <button type='submit' className='btn'>
                     Submit
-                  </button>
+                  </button> */}
                 </form>
               </FormProvider>
-
-              <div className='flex justify-center my-10'>
-                <div className='btn-group grid grid-cols-3'>
+              <progress
+                className='progress progress-primary w-full px-1'
+                value={numberSection + 1}
+                max={Sections?.length}
+              />
+              <div className='flex flex-col justify-center mb-10'>
+                <div className='flex flex-row justify-between items-center'>
                   <button
                     className={`btn ${
                       numberSection == 0 ? 'btn-disabled' : ''
                     }`}
                     onClick={() => setNumberSection(numberSection - 1)}
                   >
-                    Previous section
+                    Previous Section
                   </button>
-                  <button className='btn btn-primary'>
+                  <span>
                     {numberSection + 1} / {Sections?.length}
-                  </button>
+                  </span>
                   <button
                     className={`btn ${
                       numberSection == Sections?.length - 1
@@ -218,7 +222,7 @@ const PaperAnotation: NextPage = () => {
                     }`}
                     onClick={() => setNumberSection(numberSection + 1)}
                   >
-                    Next section
+                    Next Section
                   </button>
                 </div>
               </div>
