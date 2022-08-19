@@ -16,7 +16,12 @@ import DataPaper2 from '@/data/dummy_az_paper2';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { selectPaperValue } from '@/redux/paperSlice';
+import { selectPdfValue } from '@/redux/pdfSlice';
+import { Beforeunload, useBeforeunload } from 'react-beforeunload';
+import BeforeLoad from '@/components/BeforeLoad';
 
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState<number>(0);
@@ -24,45 +29,36 @@ const PaperAnotation: NextPage = () => {
   const cookie = new Cookies();
   const authToken = cookie.get('token');
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const Sections = DataPaper.sections.filter(
-    (section) => section.selected_sentences.length > 0
-  );
+  const paperValue = useSelector(selectPaperValue);
 
-  type TesSentences = {
-    sentence: string[];
-  };
+  const pdfValue = useSelector(selectPdfValue);
 
-  type TesSelectedSentences = {
-    selected_sentences: TesSentences[];
-  };
+  const Sections =
+    paperValue &&
+    paperValue.sections?.filter(
+      (section) => section.selected_sentences.length > 0
+    );
 
-  type TesForm = {
-    section_name: {
-      Abstract?: TesSelectedSentences;
-    };
-  };
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const methods = useForm();
+  const { handleSubmit } = methods;
 
   const TesSubmit = handleSubmit(async (data) => {
     console.log(data);
   });
 
-  const tes = async () => {
+  const Check = async () => {
+    if (Object.keys(paperValue).length === 0) return router.push('/anotation');
     if (!authToken) return router.push('/login');
     if (await isTokenValid()) return router.push('/paper-anotation');
   };
 
   useEffect(() => {
-    tes();
+    Check();
   }, []);
 
   return (
     <>
+      <BeforeLoad />
       <Layout>
         <div className='flex justify-center h-screen'>
           <div className='mt-24 flex flex-col md:flex-row max-width-component w-full px-5'>
@@ -71,11 +67,17 @@ const PaperAnotation: NextPage = () => {
                 PDF Viewer
               </div>
               <div className='p-5 h-full'>
-                <Viewer
-                  fileUrl={'/dummyExample.pdf'}
-                  plugins={[defaultLayoutPluginInstance]}
-                  defaultScale={SpecialZoomLevel.PageFit}
-                />
+                {pdfValue ? (
+                  <Viewer
+                    fileUrl={pdfValue}
+                    plugins={[defaultLayoutPluginInstance]}
+                    defaultScale={SpecialZoomLevel.PageFit}
+                  />
+                ) : (
+                  <div className='flex justify-center items-center h-full'>
+                    <p>Preview PDF</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className='md:w-1/2 w-full overflow-auto'>
@@ -90,193 +92,135 @@ const PaperAnotation: NextPage = () => {
               </CardCollapse>
 
               {/* Paper Data */}
-              <form onSubmit={TesSubmit}>
-                <Card title={Sections[numberSection].section_name}>
-                  {Sections[numberSection].selected_sentences.map(
-                    (selected: selectedSentence, indexSelected) => {
-                      return selected.sentences.map((item, index, element) => {
-                        if (index == 0) {
-                          return (
-                            <div key={index}>
-                              <Sentence data={item} />
-                              {element.length > 1 ? (
-                                <Sentence data={element[index + 1]} />
-                              ) : (
-                                ''
-                              )}
-                              <div className='flex flex-wrap'>
-                                {Tag.map((tag, idx) => {
-                                  let badgeColor;
-
-                                  if (tag.color == 'warning') {
-                                    badgeColor = 'badge-warning';
-                                  } else if (tag.color == 'info') {
-                                    badgeColor = 'badge-info';
-                                  } else if (tag.color == 'primary') {
-                                    badgeColor = 'badge-primary';
-                                  } else if (tag.color == 'success') {
-                                    badgeColor = 'badge-success';
-                                  } else if (tag.color == 'accent') {
-                                    badgeColor = 'badge-accent';
-                                  } else if (tag.color == 'neutral') {
-                                    badgeColor = 'badge-neutral';
-                                  } else {
-                                    badgeColor = 'badge-error';
-                                  }
-                                  return (
-                                    <div className='form-control' key={idx}>
-                                      <label className='label cursor-pointer'>
-                                        <input
-                                          type='radio'
-                                          className={`radio`}
-                                          value={tag.tag}
-                                          defaultChecked={tag.tag == item.tag}
-                                          {...register(
-                                            `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                          )}
-                                        />
-                                        <span className='label-text ml-2'>
-                                          <div
-                                            className={`badge badge-${tag.color}`}
-                                          >
-                                            {tag.tag}
-                                          </div>
-                                        </span>
-                                      </label>
+              <FormProvider {...methods}>
+                <form onSubmit={TesSubmit}>
+                  <Card
+                    title={Sections && Sections[numberSection].section_name}
+                  >
+                    {Sections &&
+                      Sections[numberSection].selected_sentences.map(
+                        (selected: selectedSentence, indexSelected) => {
+                          return selected.sentences.map(
+                            (item, index, element) => {
+                              if (index == 0) {
+                                return (
+                                  <>
+                                    <div key={index}>
+                                      <Sentence data={item} colored />
+                                      {element.length > 1 ? (
+                                        <Sentence data={element[index + 1]} />
+                                      ) : (
+                                        ''
+                                      )}
+                                      <div className='flex flex-wrap'>
+                                        {Tag.map((tag, idx) => {
+                                          return (
+                                            <div
+                                              className='form-control'
+                                              key={idx}
+                                            >
+                                              <Radio
+                                                data={tag}
+                                                sentence={item}
+                                                dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                              />
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        } else if (index == selected.sentences.length - 1) {
-                          return (
-                            <div key={index}>
-                              <Sentence data={element[index - 1]} />
-                              <Sentence data={item} />
-                              <div className='flex flex-wrap'>
-                                {Tag.map((tag, idx) => {
-                                  let badgeColor;
-
-                                  if (tag.color == 'warning') {
-                                    badgeColor = 'badge-warning';
-                                  } else if (tag.color == 'info') {
-                                    badgeColor = 'badge-info';
-                                  } else if (tag.color == 'primary') {
-                                    badgeColor = 'badge-primary';
-                                  } else if (tag.color == 'success') {
-                                    badgeColor = 'badge-success';
-                                  } else if (tag.color == 'accent') {
-                                    badgeColor = 'badge-accent';
-                                  } else if (tag.color == 'neutral') {
-                                    badgeColor = 'badge-neutral';
-                                  } else {
-                                    badgeColor = 'badge-error';
-                                  }
-                                  return (
-                                    <div className='form-control' key={idx}>
-                                      <label className='label cursor-pointer'>
-                                        <input
-                                          type='radio'
-                                          className={`radio`}
-                                          value={tag.tag}
-                                          defaultChecked={tag.tag == item.tag}
-                                          {...register(
-                                            `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                          )}
-                                        />
-                                        <span className='label-text ml-2'>
+                                    <div className='divider'></div>
+                                  </>
+                                );
+                              } else if (
+                                index ==
+                                selected.sentences.length - 1
+                              ) {
+                                return (
+                                  <div key={index}>
+                                    <Sentence data={element[index - 1]} />
+                                    <Sentence data={item} colored />
+                                    <div className='flex flex-wrap'>
+                                      {Tag.map((tag, idx) => {
+                                        return (
                                           <div
-                                            className={`badge badge-${tag.color}`}
+                                            className='form-control'
+                                            key={idx}
                                           >
-                                            {tag.tag}
+                                            <Radio
+                                              data={tag}
+                                              sentence={item}
+                                              dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                            />
                                           </div>
-                                        </span>
-                                      </label>
+                                        );
+                                      })}
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
-                          );
-                        } else {
-                          return (
-                            <div key={index}>
-                              <Sentence data={element[index - 1]} />
-                              <Sentence data={item} />
-                              <Sentence data={element[index + 1]} />
-                              <div className='flex flex-wrap'>
-                                {Tag.map((tag, idx) => {
-                                  let badgeColor;
-
-                                  if (tag.color == 'warning') {
-                                    badgeColor = 'badge-warning';
-                                  } else if (tag.color == 'info') {
-                                    badgeColor = 'badge-info';
-                                  } else if (tag.color == 'primary') {
-                                    badgeColor = 'badge-primary';
-                                  } else if (tag.color == 'success') {
-                                    badgeColor = 'badge-success';
-                                  } else if (tag.color == 'accent') {
-                                    badgeColor = 'badge-accent';
-                                  } else if (tag.color == 'neutral') {
-                                    badgeColor = 'badge-neutral';
-                                  } else {
-                                    badgeColor = 'badge-error';
-                                  }
-                                  return (
-                                    <div className='form-control' key={idx}>
-                                      <label className='label cursor-pointer'>
-                                        <input
-                                          type='radio'
-                                          className={`radio`}
-                                          value={tag.tag}
-                                          defaultChecked={tag.tag == item.tag}
-                                          {...register(
-                                            `section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`
-                                          )}
-                                        />
-                                        <span className='label-text ml-2'>
-                                          <div
-                                            className={`badge badge-${tag.color}`}
-                                          >
-                                            {tag.tag}
-                                          </div>
-                                        </span>
-                                      </label>
+                                  </div>
+                                );
+                              } else {
+                                return (
+                                  <>
+                                    <div key={index}>
+                                      <Sentence data={element[index - 1]} />
+                                      <Sentence data={item} colored />
+                                      <Sentence data={element[index + 1]} />
+                                      <div className='flex flex-wrap'>
+                                        {Tag.map((tag, idx) => {
+                                          return (
+                                            <div
+                                              className='form-control'
+                                              key={idx}
+                                            >
+                                              <Radio
+                                                data={tag}
+                                                sentence={item}
+                                                dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                              />
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            </div>
+                                    <div className='divider'></div>
+                                  </>
+                                );
+                              }
+                            }
                           );
                         }
-                      });
-                    }
-                  )}
-                </Card>
-                <button type='submit' className='btn'>
-                  Submit
-                </button>
-              </form>
+                      )}
+                  </Card>
+                  <button type='submit' className='btn'>
+                    Submit
+                  </button>
+                </form>
+              </FormProvider>
 
-              <div className='flex justify-between my-10'>
-                <button
-                  className={`btn btn-primary ${
-                    numberSection == 0 ? 'invisible' : ''
-                  }`}
-                  onClick={() => setNumberSection(numberSection - 1)}
-                >
-                  PREV
-                </button>
-                <button
-                  className={`btn ${
-                    numberSection == Sections.length - 1 ? 'invisible' : ''
-                  }`}
-                  onClick={() => setNumberSection(numberSection + 1)}
-                >
-                  NEXT
-                </button>
+              <div className='flex justify-center my-10'>
+                <div className='btn-group grid grid-cols-3'>
+                  <button
+                    className={`btn ${
+                      numberSection == 0 ? 'btn-disabled' : ''
+                    }`}
+                    onClick={() => setNumberSection(numberSection - 1)}
+                  >
+                    Previous section
+                  </button>
+                  <button className='btn btn-primary'>
+                    {numberSection + 1} / {Sections?.length}
+                  </button>
+                  <button
+                    className={`btn ${
+                      numberSection == Sections?.length - 1
+                        ? 'btn-disabled'
+                        : ''
+                    }`}
+                    onClick={() => setNumberSection(numberSection + 1)}
+                  >
+                    Next section
+                  </button>
+                </div>
               </div>
             </div>
           </div>
