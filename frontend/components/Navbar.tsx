@@ -2,15 +2,50 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
+import { useSelector } from 'react-redux';
+import { selectPaperValue } from '@/redux/paperSlice';
+import { exportData } from '@/lib/exportData';
+import { dataExport } from '@/types/paper';
 
 const Navbar = () => {
   const router = useRouter();
   const cookie = new Cookies();
+  const paperValue = useSelector(selectPaperValue);
+  const Sections =
+    paperValue &&
+    paperValue.sections?.filter(
+      (section) => section.selected_sentences.length > 0
+    );
 
   const Logout = async () => {
     cookie.remove('token');
     toast.success('Berhasil Logout!');
     router.push('/login');
+  };
+
+  const handleExport = () => {
+    const Data: dataExport[] = [];
+
+    Sections.map((section, sectionKey) => {
+      return section.selected_sentences.map((selected, selectedKey) => {
+        return selected.sentences.map((sentence, sentenceKey) => {
+          Data.push({
+            paper_id: paperValue.paper_id,
+            section_name: section.section_name,
+            par_id: selected.par_id,
+            sent_id: 'sent_'+selected.par_id+'_'+sentenceKey,
+            automatic_label: sentence.tag,
+            manual_label: sentence.tag,
+            checked: true,
+            correct_section_head: false,
+            sent: sentence.sent,
+          });
+        })
+      })
+    });
+    
+    // console.log(paperValue);
+    exportData(Data, 'Tes')
   };
 
   return (
@@ -19,7 +54,9 @@ const Navbar = () => {
         <a className='btn btn-ghost normal-case text-lg'>Anotation Paper</a>
       </div>
       <div className='flex-none gap-4'>
-        <button className='btn btn-primary'>Download Progress</button>
+        <button className='btn btn-primary' onClick={handleExport}>
+          Download Progress
+        </button>
 
         <div className='dropdown dropdown-end'>
           <label tabIndex={0} className='btn btn-ghost rounded-btn'>
