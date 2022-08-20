@@ -14,16 +14,13 @@ import (
 )
 
 func RegisterController(c echo.Context) error {
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 
 	data := &models.User{}
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!", http.StatusInternalServerError))
 	}
-	err = utils.ValidateUser(data)
+	err := utils.ValidateUser(data)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("Missing fields or data not valid!", http.StatusInternalServerError))
 	}
@@ -56,10 +53,7 @@ func LoginController(c echo.Context) error {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 
 	data := &models.UserBodyLogin{}
 	if err := c.Bind(&data); err != nil {
@@ -92,14 +86,13 @@ func UserProfileController(c echo.Context) error {
 	profileData.Email = user.Email
 	profileData.Id = user.Id
 	profileData.Exp = user.ExpiresAt
+	profileData.Name = user.Name
 
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 
 	userPaperDB := []models.UserPaper{}
-	db.Table("user_papers").Where("user_id = ? & is_done = ?", user.Id, true).Find(&userPaperDB)
+	db.Table("user_papers").Where("user_id = ? AND is_done = ?", user.Id, true).Find(&userPaperDB)
+
 	profileData.ListPapers = userPaperDB
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", profileData))
 }
