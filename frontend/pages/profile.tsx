@@ -131,10 +131,10 @@ const Profile = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dataUser?.list_papers?.map((data: PaperProfile) => {
+                  {dataUser?.list_papers?.map((data: PaperProfile, index) => {
                     return (
                       <tr>
-                        <th>1</th>
+                        <th>{index + 1}</th>
                         <td>{removeStrip(data.paper_name)}</td>
                         <td>
                           <div className='flex gap-2'>
