@@ -92,6 +92,7 @@ func UserProfileController(c echo.Context) error {
 	profileData.Email = user.Email
 	profileData.Id = user.Id
 	profileData.Exp = user.ExpiresAt
+	profileData.Name = user.Name
 
 	db, err := config.ConnectionDatabase()
 	if err != nil {
@@ -99,7 +100,9 @@ func UserProfileController(c echo.Context) error {
 	}
 
 	userPaperDB := []models.UserPaper{}
-	db.Table("user_papers").Where("user_id = ? & is_done = ?", user.Id, true).Find(&userPaperDB)
+	result := db.Table("user_papers").Where("user_id = ? AND is_done = ?", user.Id, true).Find(&userPaperDB)
+	log.Println(result.RowsAffected)
+	utils.DebugerPrint(userPaperDB)
 	profileData.ListPapers = userPaperDB
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", profileData))
 }
