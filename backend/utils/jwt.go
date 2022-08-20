@@ -21,7 +21,7 @@ type Claims struct {
 
 func JwtGenerator(id int64, name string, email string, key string) string {
 	//Generate Token JWT for auth
-	expirationTime := time.Now().Add(time.Hour * 24)
+	expirationTime := time.Now().Add(time.Hour * 24 * 30)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 		Id:    id,
 		Name:  name,
