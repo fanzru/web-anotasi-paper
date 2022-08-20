@@ -1,14 +1,19 @@
 import BeforeLoad from '@/components/BeforeLoad';
 import Layout from '@/components/Layout';
+import { axiosInstance } from '@/lib/axios';
 import { selectPaperValue } from '@/redux/paperSlice';
 import Link from 'next/link';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 const Profile = () => {
   const paperValue = useSelector(selectPaperValue);
+  const [dataUser, setDataUser] = useState('');
   const backPath =
     Object.keys(paperValue).length === 0 ? '/anotation' : '/paper-anotation';
 
+  const result = axiosInstance.get('');
+  
   return (
     <Layout>
       <BeforeLoad />
