@@ -15,7 +15,6 @@ func ResponseError(message string, code int, err ...error) echo.Map {
 }
 
 func ResponseSuccess(message string, data interface{}) echo.Map {
-	log.Info(data)
 	return echo.Map{
 		"code":    200,
 		"status":  true,
