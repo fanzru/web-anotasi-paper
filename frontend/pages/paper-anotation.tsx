@@ -191,41 +191,44 @@ const PaperAnotation: NextPage = () => {
                         }
                       )}
                   </Card>
-                  {/* <button type='submit' className='btn'>
-                    Submit
-                  </button> */}
+                  <progress
+                    className='progress progress-primary w-full px-1'
+                    value={numberSection + 1}
+                    max={Sections?.length}
+                  />
+                  <div className='flex flex-col justify-center mb-10'>
+                    <div className='flex flex-row justify-between items-center'>
+                      <input
+                        type='button'
+                        value='Previous Section'
+                        className={`btn ${
+                          numberSection == 0 ? 'btn-disabled' : ''
+                        }`}
+                        onClick={() => setNumberSection(numberSection - 1)}
+                      />
+                      <span>
+                        {numberSection + 1} / {Sections?.length}
+                      </span>
+                      {numberSection == Sections?.length - 1 ? (
+                        <button className='btn btn-secondary' type='submit'>
+                          submit
+                        </button>
+                      ) : (
+                        <input
+                          type='button'
+                          value='Next Section'
+                          className={`btn ${
+                            numberSection == Sections?.length - 1
+                              ? 'btn-disabled'
+                              : ''
+                          }`}
+                          onClick={() => setNumberSection(numberSection + 1)}
+                        />
+                      )}
+                    </div>
+                  </div>
                 </form>
               </FormProvider>
-              <progress
-                className='progress progress-primary w-full px-1'
-                value={numberSection + 1}
-                max={Sections?.length}
-              />
-              <div className='flex flex-col justify-center mb-10'>
-                <div className='flex flex-row justify-between items-center'>
-                  <button
-                    className={`btn ${
-                      numberSection == 0 ? 'btn-disabled' : ''
-                    }`}
-                    onClick={() => setNumberSection(numberSection - 1)}
-                  >
-                    Previous Section
-                  </button>
-                  <span>
-                    {numberSection + 1} / {Sections?.length}
-                  </span>
-                  <button
-                    className={`btn ${
-                      numberSection == Sections?.length - 1
-                        ? 'btn-disabled'
-                        : ''
-                    }`}
-                    onClick={() => setNumberSection(numberSection + 1)}
-                  >
-                    Next Section
-                  </button>
-                </div>
-              </div>
             </div>
           </div>
         </div>
