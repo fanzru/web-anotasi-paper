@@ -90,7 +90,7 @@ const Login = () => {
                 )}
               </label>
               <input
-                type='text'
+                type='password'
                 placeholder='Type here'
                 className='input input-bordered w-full max-w-xs'
                 {...register('password', {
