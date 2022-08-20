@@ -14,10 +14,14 @@ export type Section = {
 };
 
 export type dataPaper = {
-  // id: number;
+  id: number;
+  user_id: number;
   paper_name: string;
-  paper_id: string;
   sections: Section[];
+  article_info: string;
+  domain_info: string;
+  link_pdf: string;
+  is_done: false;
 };
 
 export type dataExport = {

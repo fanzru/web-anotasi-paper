@@ -196,7 +196,9 @@ const PaperAnotation: NextPage = () => {
                   {numberSection == Sections?.length - 1 && (
                     <div className='form-control py-1 items-end'>
                       <label className='cursor-pointer label'>
-                        <span className='label-text mr-3'>Compare with Longsum</span>
+                        <span className='label-text mr-3'>
+                          Compare with Longsum
+                        </span>
                         <input
                           type='checkbox'
                           className='checkbox checkbox-accent'

@@ -14,6 +14,7 @@ import Cookies from 'universal-cookie';
 import { changePdfData, selectPdfValue } from '@/redux/pdfSlice';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
+import { removeSpace } from '@/lib/removeSpace';
 
 type Annotaion = {
   articleInfo: string;
@@ -50,7 +51,7 @@ const Annotation = () => {
       var bodyFormData = new FormData();
       bodyFormData.append('article_info', data.articleInfo);
       bodyFormData.append('domain_info', data.domainInfo);
-      bodyFormData.append('paper_id', data.paperName);
+      bodyFormData.append('paper_name', removeSpace(data.paperName));
       bodyFormData.append('pdf_article', file!);
 
       const res = await toast.promise(
@@ -111,21 +112,19 @@ const Annotation = () => {
                   </p>
                   {DataArticle.map((data, idx) => {
                     return (
-                      <>
-                        <div className='form-control items-start' key={idx}>
-                          <label className='label cursor-pointer gap-2'>
-                            <input
-                              type='radio'
-                              className='radio'
-                              {...register('articleInfo', {
-                                required: 'Required',
-                              })}
-                              value={data.value}
-                            />
-                            <span>{data.value}</span>
-                          </label>
-                        </div>
-                      </>
+                      <div className='form-control items-start' key={idx}>
+                        <label className='label cursor-pointer gap-2'>
+                          <input
+                            type='radio'
+                            className='radio'
+                            {...register('articleInfo', {
+                              required: 'Required',
+                            })}
+                            value={data.value}
+                          />
+                          <span>{data.value}</span>
+                        </label>
+                      </div>
                     );
                   })}
                   <label className='label'>

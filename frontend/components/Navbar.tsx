@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { exportData } from '@/lib/exportData';
 import { dataExport } from '@/types/paper';
+import { toExportData } from '@/lib/toExportData';
 
 const Navbar = () => {
   const router = useRouter();
@@ -24,31 +25,14 @@ const Navbar = () => {
   };
 
   const handleExport = () => {
-    const Data: dataExport[] = [];
+    const Data: dataExport[] = toExportData(Sections, paperValue);
 
-    Sections.map((section, sectionKey) => {
-      return section.selected_sentences.map((selected, selectedKey) => {
-        return selected.sentences.map((sentence, sentenceKey) => {
-          Data.push({
-            paper_id: paperValue.paper_id,
-            section_name: section.section_name,
-            par_id: selected.par_id,
-            sent_id: 'sent_'+selected.par_id+'_'+sentenceKey,
-            automatic_label: sentence.tag,
-            manual_label: sentence.tag,
-            checked: true,
-            sent: sentence.sent
-          });
-        })
-      })
-    });
-    
     // console.log(paperValue);
-    exportData(Data, 'Tes')
+    exportData(Data, 'Tes');
   };
 
   return (
-    <div className='navbar bg-base-300 px-5 fixed top-0'>
+    <div className='navbar bg-base-300 px-5 fixed top-0 z-50'>
       <div className='flex-1'>
         <a className='btn btn-ghost normal-case text-lg'>Anotation Paper</a>
       </div>
