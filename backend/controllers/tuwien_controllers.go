@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"encoding/json"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -264,6 +265,56 @@ func ArtuSummaController(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", responseResult))
+}
+
+func SavedArtuSummaController(c echo.Context) error {
+	user, status := utils.ExtractClaims(c)
+	if !status {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	}
+	modelsPaper := &models.DataPaperArtuSummaryRequest{}
+	err := c.Bind(modelsPaper)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
+	}
+
+	db, err := config.ConnectionDatabase()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
+	}
+
+	userPaperDB := models.UserPaper{}
+	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", modelsPaper.UserPaperID, user.Id).First(&userPaperDB)
+	if resultDB.RowsAffected == 0 {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
+	}
+
+	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
+	for _, summary := range modelsPaper.Summaries {
+		if summary.Method == "lmjm" {
+			for i, zonesSumarry := range summary.ZonesSummary {
+				log.Println("----- ke :", i)
+				for j, sent := range zonesSumarry.CategorySummary {
+					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+						UserPaperID:    modelsPaper.UserPaperID,
+						UserId:         user.Id,
+						PaperName:      userPaperDB.PaperName,
+						SectionName:    "",
+						ParId:          int64(i),
+						SentId:         fmt.Sprintf("sent_%d_%d", i, j),
+						Sent:           sent,
+						AutomaticLabel: zonesSumarry.Category,
+						ManualLabel:    "",
+						Checked:        false,
+					})
+				}
+			}
+		}
+	}
+
+	// todo : saved to db, waiting confirmation flow from bu ade, pak said & bu hasma
+
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", artuSummarySavedDB))
 }
 
 // ----------------------------------------------------------------

@@ -84,9 +84,22 @@ type Token struct {
 }
 
 func UserProfileController(c echo.Context) error {
-	result, status := utils.ExtractClaims(c)
+	user, status := utils.ExtractClaims(c)
 	if !status {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
 	}
-	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", result))
+	profileData := models.UserProfileData{}
+	profileData.Email = user.Email
+	profileData.Id = user.Id
+	profileData.Exp = user.ExpiresAt
+
+	db, err := config.ConnectionDatabase()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
+	}
+
+	userPaperDB := []models.UserPaper{}
+	db.Table("user_papers").Where("user_id = ? & is_done = ?", user.Id, true).Find(&userPaperDB)
+	profileData.ListPapers = userPaperDB
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", profileData))
 }

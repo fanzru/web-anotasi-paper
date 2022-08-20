@@ -15,7 +15,9 @@ func TuwienRoutes(e *echo.Echo) *echo.Echo {
 	// customMiddleware := utils.CustomeMiddleware()
 	g.POST("/artu-az", controllers.AzArtuController)
 	g.POST("/artu-az/saved", controllers.SavedArtuAzController)
+
 	g.POST("/artu-summarize/:user_paper_id", controllers.ArtuSummaController)
+	g.POST("/artu-summarize/saved", controllers.SavedArtuSummaController)
 	g.POST("/test/upload", controllers.UploadPdfToS3Storage)
 	return e
 }
