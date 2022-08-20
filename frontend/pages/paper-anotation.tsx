@@ -11,8 +11,6 @@ import Layout from '@/components/Layout';
 import Sentence from '@/components/Sentence';
 import { isTokenValid } from '@/lib/tokenValidate';
 import CardCollapse from '@/components/CardCollapse';
-import DataPaper from '@/data/dummy_az_identification';
-import DataPaper2 from '@/data/dummy_az_paper2';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
@@ -20,7 +18,6 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { selectPdfValue } from '@/redux/pdfSlice';
-import { Beforeunload, useBeforeunload } from 'react-beforeunload';
 import BeforeLoad from '@/components/BeforeLoad';
 
 const PaperAnotation: NextPage = () => {
@@ -196,6 +193,18 @@ const PaperAnotation: NextPage = () => {
                     value={numberSection + 1}
                     max={Sections?.length}
                   />
+                  {numberSection == Sections?.length - 1 && (
+                    <div className='form-control py-1 items-end'>
+                      <label className='cursor-pointer label'>
+                        <span className='label-text mr-3'>Compare with Longsum</span>
+                        <input
+                          type='checkbox'
+                          className='checkbox checkbox-accent'
+                        />
+                      </label>
+                    </div>
+                  )}
+
                   <div className='flex flex-col justify-center mb-10'>
                     <div className='flex flex-row justify-between items-center'>
                       <input

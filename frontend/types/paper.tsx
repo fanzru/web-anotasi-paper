@@ -14,6 +14,8 @@ export type Section = {
 };
 
 export type dataPaper = {
+  // id: number;
+  paper_name: string;
   paper_id: string;
   sections: Section[];
 };
