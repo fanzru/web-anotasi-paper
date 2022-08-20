@@ -18,7 +18,7 @@ const EndSection = () => {
           <Link href={'/anotation'}>
             <a className='btn'>back to anotate paper</a>
           </Link>
-          <Link href={'/anotation'}>
+          <Link href={'/profile'}>
             <a className='btn btn-primary'>go to profile</a>
           </Link>
         </div>
