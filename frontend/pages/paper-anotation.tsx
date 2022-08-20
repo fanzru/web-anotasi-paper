@@ -75,7 +75,10 @@ const PaperAnotation: NextPage = () => {
       Data,
       config
     );
-    console.log(result);
+
+    if (result.data.status) {
+      router.push('/artu-az-end');
+    }
   });
 
   const Check = async () => {

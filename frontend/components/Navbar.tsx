@@ -37,9 +37,11 @@ const Navbar = () => {
         <a className='btn btn-ghost normal-case text-lg'>Anotation Paper</a>
       </div>
       <div className='flex-none gap-4'>
-        <button className='btn btn-primary' onClick={handleExport}>
-          Download Progress
-        </button>
+        {router.pathname === '/paper-anotation' && (
+          <button className='btn btn-primary' onClick={handleExport}>
+            Download Progress
+          </button>
+        )}
 
         <div className='dropdown dropdown-end'>
           <label tabIndex={0} className='btn btn-ghost rounded-btn'>
