@@ -1,12 +1,14 @@
 import BeforeLoad from '@/components/BeforeLoad';
 import Layout from '@/components/Layout';
 import { axiosInstance } from '@/lib/axios';
+import { exportData } from '@/lib/exportData';
 import { removeStrip } from '@/lib/removeSpace';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { PaperProfile, Profile } from '@/types/profil';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import Cookies from 'universal-cookie';
 
 const Profile = () => {
@@ -32,11 +34,49 @@ const Profile = () => {
       });
   };
 
+  const getUserSummary = (id: number) => {
+    axiosInstance
+      .get(`/api/tuwien/artu-az/${id}`, {
+        params: {
+          type: 'user',
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        exportData(res.data.value, res.data.value[0].paper_name);
+      })
+      .catch((err) => {
+        if (err.response.data.code === 400)
+          toast.error(err.response.data.message);
+        else toast.error('Download Error!');
+      });
+  };
+
+  const getLongSummary = (id: number) => {
+    axiosInstance
+      .get(`/api/tuwien/artu-az/${id}`, {
+        params: {
+          type: 'longsumm',
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        exportData(res.data.value, res.data.value[0].paper_name);
+      })
+      .catch((err) => {
+        if (err.response.data.code === 400)
+          toast.error(err.response.data.message);
+        else toast.error('Download Error!');
+      });
+  };
+
   useEffect(() => {
     getProfil();
   }, []);
-
-  console.log(dataUser);
 
   return (
     <Layout>
@@ -142,7 +182,10 @@ const Profile = () => {
                                 show pdf
                               </a>
                             </Link>
-                            <button className='btn btn-warning btn-xs gap-1'>
+                            <button
+                              className='btn btn-warning btn-xs gap-1'
+                              onClick={() => getUserSummary(data.id)}
+                            >
                               <svg
                                 xmlns='http://www.w3.org/2000/svg'
                                 className='h-4 w-4'
@@ -157,7 +200,10 @@ const Profile = () => {
                               </svg>
                               user summary
                             </button>
-                            <button className='btn btn-warning btn-xs gap-1'>
+                            <button
+                              className='btn btn-warning btn-xs gap-1'
+                              onClick={() => getLongSummary(data.id)}
+                            >
                               <svg
                                 xmlns='http://www.w3.org/2000/svg'
                                 className='h-4 w-4'
