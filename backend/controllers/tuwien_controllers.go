@@ -115,10 +115,7 @@ func AzArtuController(c echo.Context) error {
 		log.Fatal(err)
 	}
 
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 	paperSaved := models.UserPaper{
 		PaperName:   name,
 		ArticleInfo: articleInfo,
@@ -172,10 +169,7 @@ func SavedArtuAzController(c echo.Context) error {
 		})
 	}
 
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 
 	r := &models.ArtuAzDataPaper{}
 	resp := db.Table("artu_az_data_papers").Where("user_paper_id = ? AND user_id = ?", modelsPaperDB[0].UserPaperID, user.Id).First(r)
@@ -203,10 +197,7 @@ func ArtuSummaController(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
 	}
 
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 
 	userPaperDB := models.UserPaper{}
 	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", userPaperId, user.Id).First(&userPaperDB)
@@ -215,7 +206,7 @@ func ArtuSummaController(c echo.Context) error {
 	}
 	srcFile := userPaperDB.LinkPdf
 
-	err = utils.DownloadFile("temporary.pdf", srcFile)
+	err := utils.DownloadFile("temporary.pdf", srcFile)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("PDF file s3 error!", http.StatusInternalServerError))
@@ -278,10 +269,7 @@ func SavedArtuSummaController(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
 	}
 
-	db, err := config.ConnectionDatabase()
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
-	}
+	db := config.GetConnection()
 
 	userPaperDB := models.UserPaper{}
 	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", modelsPaper.UserPaperID, user.Id).First(&userPaperDB)
@@ -315,6 +303,39 @@ func SavedArtuSummaController(c echo.Context) error {
 	// todo : saved to db, waiting confirmation flow from bu ade, pak said & bu hasma
 
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", artuSummarySavedDB))
+}
+
+func GetUserPaper(c echo.Context) error {
+	_, status := utils.ExtractClaims(c)
+	if !status {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	}
+	userPaperId := c.Param("user_paper_id")
+	typeSummary := c.QueryParam("type")
+	if typeSummary == "" {
+		typeSummary = "user"
+	}
+	db := config.GetConnection()
+	artuAzDataPaperDB := []models.ArtuAzDataPaper{}
+	if typeSummary == "user" {
+
+		r := db.Table("artu_az_data_papers").Where("user_paper_id = ?", userPaperId).Find(&artuAzDataPaperDB)
+		if r.RowsAffected < 1 {
+			return c.JSON(http.StatusBadRequest, utils.ResponseError("User Data Papers Summary Not Found!", http.StatusBadRequest))
+		}
+	} else if typeSummary == "longsumm" {
+		r := db.Table("artu_summa_data_papers").Where("user_paper_id = ?", userPaperId).Find(&artuAzDataPaperDB)
+		if r.RowsAffected < 1 {
+			return c.JSON(http.StatusBadRequest, utils.ResponseError("Artu Longsumm Summary Data Papers Not Found!", http.StatusBadRequest))
+		}
+	} else {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please check your query params!", http.StatusBadRequest))
+	}
+	if userPaperId == "" {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
+	}
+
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", artuAzDataPaperDB))
 }
 
 // ----------------------------------------------------------------
