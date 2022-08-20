@@ -1,25 +1,6 @@
 package models
 
-type Sentence struct {
-	Sent string `json:"sent"`
-	Tag  string `json:"tag"`
-}
-
-type SelectedSentence struct {
-	ParId     int64      `json:"par_id"`
-	Sentences []Sentence `json:"sentences"`
-}
-
-type Section struct {
-	SectionName       string             `json:"section_name"`
-	SelectedSentences []SelectedSentence `json:"selected_sentences"`
-}
-
-type DataPaper struct {
-	Id       *int64    `json:"id"`
-	PaperId  string    `json:"paper_id"`
-	Sections []Section `json:"sections"`
-}
+// migration models
 
 type ArtuAzDataPaper struct {
 	UserPaperID    int64  `json:"user_paper_id" gorm:"user_paper_id"`
@@ -44,6 +25,41 @@ type UserPaper struct {
 	IsDone      bool   `json:"is_done" gorm:"is_done"`
 }
 
+type ArtuSummaDataPaper struct {
+	UserPaperID    int64  `json:"user_paper_id" gorm:"user_paper_id"`
+	UserId         int64  `json:"user_id" gorm:"user_id"`
+	PaperName      string `json:"paper_name" gorm:"paper_name"`
+	SectionName    string `json:"section_name" gorm:"section_name"`
+	ParId          int64  `json:"par_id" gorm:"par_id"`
+	SentId         string `json:"sent_id" gorm:"sent_id"`
+	AutomaticLabel string `json:"automatic_label" gorm:"automatic_label"`
+	ManualLabel    string `json:"manual_label" gorm:"manual_label"`
+	Checked        bool   `json:"checked" gorm:"checked"`
+	Sent           string `json:"sent" gorm:"sent"`
+}
+
+// non migration
+type Sentence struct {
+	Sent string `json:"sent"`
+	Tag  string `json:"tag"`
+}
+
+type SelectedSentence struct {
+	ParId     int64      `json:"par_id"`
+	Sentences []Sentence `json:"sentences"`
+}
+
+type Section struct {
+	SectionName       string             `json:"section_name"`
+	SelectedSentences []SelectedSentence `json:"selected_sentences"`
+}
+
+type DataPaper struct {
+	Id       *int64    `json:"id"`
+	PaperId  string    `json:"paper_id"`
+	Sections []Section `json:"sections"`
+}
+
 type ArtuAzPaperResponse struct {
 	Id          int64     `json:"id" gorm:"id;PRIMARY_KEY;AUTO_INCREMENT;"`
 	UserId      int64     `json:"user_id" gorm:"user_id"`
@@ -58,6 +74,12 @@ type ArtuAzPaperResponse struct {
 type DataPaperArtuSummary struct {
 	DocId     string      `json:"doc_id"`
 	Summaries []Summaries `json:"summaries"`
+}
+type DataPaperArtuSummaryRequest struct {
+	UserPaperID int64       `json:"user_paper_id" gorm:"user_paper_id"`
+	UserId      int64       `json:"user_id" gorm:"user_id"`
+	DocId       string      `json:"doc_id"`
+	Summaries   []Summaries `json:"summaries"`
 }
 
 type Summaries struct {

@@ -13,3 +13,11 @@ type UserBodyLogin struct {
 	Password string `json:"password"`
 	Token    string `json:"token"`
 }
+
+type UserProfileData struct {
+	Id         int64       `json:"id"`
+	Name       string      `json:"name"`
+	Email      string      `json:"email"`
+	Exp        int64       `json:"exp"`
+	ListPapers []UserPaper `json:"list_papers"`
+}
