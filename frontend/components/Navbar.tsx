@@ -37,8 +37,7 @@ const Navbar = () => {
             automatic_label: sentence.tag,
             manual_label: sentence.tag,
             checked: true,
-            correct_section_head: false,
-            sent: sentence.sent,
+            sent: sentence.sent
           });
         })
       })

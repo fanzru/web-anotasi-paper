@@ -19,6 +19,7 @@ export type dataPaper = {
 };
 
 export type dataExport = {
+  user_id?: string;
   paper_id: string;
   section_name: string;
   par_id: number;
@@ -26,6 +27,5 @@ export type dataExport = {
   automatic_label: string;
   manual_label: string;
   checked: boolean;
-  correct_section_head: boolean;
   sent: string;
 };
