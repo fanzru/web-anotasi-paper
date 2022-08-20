@@ -33,6 +33,7 @@ func AzArtuController(c echo.Context) error {
 	}
 
 	name := c.FormValue("paper_name")
+	name = strings.ReplaceAll(name, " ", "-")
 	articleInfo := c.FormValue("article_info")
 	domainInfo := c.FormValue("domain_info")
 	fileUpload, err := c.FormFile("pdf_article")
@@ -192,41 +193,38 @@ func SavedArtuAzController(c echo.Context) error {
 }
 
 func ArtuSummaController(c echo.Context) error {
-	_, status := utils.ExtractClaims(c)
+	user, status := utils.ExtractClaims(c)
 	if !status {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
 	}
+	userPaperId := c.Param("user_paper_id")
+	if userPaperId == "" {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
+	}
 
-	name := c.FormValue("paper_id")
-	fileUpload, err := c.FormFile("pdf_article")
+	db, err := config.ConnectionDatabase()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Connection Database Failed!", http.StatusInternalServerError))
 	}
 
-	src, err := fileUpload.Open()
+	userPaperDB := models.UserPaper{}
+	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", userPaperId, user.Id).First(&userPaperDB)
+	if resultDB.RowsAffected == 0 {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
+	}
+	srcFile := userPaperDB.LinkPdf
+
+	err = utils.DownloadFile("temporary.pdf", srcFile)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("pdf_article failed to open", http.StatusInternalServerError))
+		log.Println(err)
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("PDF file s3 error!", http.StatusInternalServerError))
 	}
-	defer src.Close()
-
-	srcFile := "./temp/" + fileUpload.Filename
-	dst, err := os.Create(srcFile)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("os.Create failed", http.StatusInternalServerError))
-	}
-	defer dst.Close()
-	defer os.Remove(srcFile)
-
-	// Copy
-	if _, err = io.Copy(dst, src); err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("io.Copy failed", http.StatusInternalServerError))
-	}
-
 	// Read file
-	fileBytes, err := ioutil.ReadFile(srcFile)
+	fileBytes, err := os.ReadFile("./temp/temporary.pdf")
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("ReadFile failed", http.StatusInternalServerError))
 	}
+	defer os.Remove("./temp/temporary.pdf")
 
 	client := resty.New()
 	client.SetDisableWarn(true)
@@ -246,7 +244,7 @@ func ArtuSummaController(c echo.Context) error {
 				Param:       "paper_id",
 				FileName:    "",
 				ContentType: "text/plain",
-				Reader:      strings.NewReader(name),
+				Reader:      strings.NewReader(userPaperDB.PaperName),
 			}).
 		SetContentLength(true).
 		Post(URLArtu)
@@ -268,6 +266,8 @@ func ArtuSummaController(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", responseResult))
 }
 
+// ----------------------------------------------------------------
+// Testing PDF Upload
 func UploadPdfToS3Storage(c echo.Context) error {
 	_, status := utils.ExtractClaims(c)
 	if !status {
