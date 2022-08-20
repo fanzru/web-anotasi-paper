@@ -7,7 +7,8 @@ export const toExportData = (sections: Section[], valuePaper: dataPaper) => {
     return section.selected_sentences.map((selected) => {
       return selected.sentences.map((sentence, sentenceKey) => {
         Result.push({
-          paper_id: valuePaper.paper_name,
+          user_paper_id: valuePaper.id,
+          paper_name: valuePaper.paper_name,
           section_name: section.section_name,
           par_id: selected.par_id,
           sent_id: 'sent_' + selected.par_id + '_' + sentenceKey,

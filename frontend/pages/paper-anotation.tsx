@@ -21,6 +21,7 @@ import { selectPdfValue } from '@/redux/pdfSlice';
 import BeforeLoad from '@/components/BeforeLoad';
 import { toExportData } from '@/lib/toExportData';
 import { axiosInstance } from '@/lib/axios';
+import { exportData } from '@/lib/exportData';
 
 type SentencesResult = {
   sentences: string[];
@@ -53,31 +54,37 @@ const PaperAnotation: NextPage = () => {
     const Data: dataExport[] = toExportData(Sections, paperValue);
     const tag: string[] = [];
 
-    data.section_name.map((section: SelectedSentenceResult) => {
-      section.selected_sentences.map((sentences: SentencesResult) => {
-        sentences.sentences.map((sentence: string) => {
-          tag.push(sentence);
+    if (data.withLongsum) {
+      // todo
+      console.log(data);
+    } else {
+      data.section_name.map((section: SelectedSentenceResult) => {
+        section.selected_sentences.map((sentences: SentencesResult) => {
+          sentences.sentences.map((sentence: string) => {
+            tag.push(sentence);
+          });
         });
       });
-    });
 
-    Data.map((data, index) => {
-      data.manual_label = tag[index];
-      data.checked = data.automatic_label !== tag[index];
-    });
+      Data.map((data, index) => {
+        data.manual_label = tag[index];
+        data.checked = data.automatic_label !== tag[index];
+      });
 
-    const config = {
-      headers: { Authorization: `Bearer ${authToken}` },
-    };
+      const config = {
+        headers: { Authorization: `Bearer ${authToken}` },
+      };
 
-    const result = await axiosInstance.post(
-      '/api/tuwien/artu-az/saved',
-      Data,
-      config
-    );
+      const result = await axiosInstance.post(
+        '/api/tuwien/artu-az/saved',
+        Data,
+        config
+      );
 
-    if (result.data.status) {
-      router.push('/artu-az-end');
+      if (result.data.status) {
+        exportData(Data, Data[0].paper_name);
+        router.push('/artu-az-end');
+      }
     }
   });
 
