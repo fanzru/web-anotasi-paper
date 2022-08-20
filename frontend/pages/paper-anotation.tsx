@@ -6,7 +6,7 @@ import Cookies from 'universal-cookie';
 import { Tag } from '@/data/tag';
 import Card from '@/components/Card';
 import Radio from '@/components/Radio';
-import { selectedSentence } from '@/types/paper';
+import { dataExport, selectedSentence } from '@/types/paper';
 import Layout from '@/components/Layout';
 import Sentence from '@/components/Sentence';
 import { isTokenValid } from '@/lib/tokenValidate';
@@ -19,6 +19,16 @@ import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { selectPdfValue } from '@/redux/pdfSlice';
 import BeforeLoad from '@/components/BeforeLoad';
+import { toExportData } from '@/lib/toExportData';
+import { axiosInstance } from '@/lib/axios';
+
+type SentencesResult = {
+  sentences: string[];
+};
+
+type SelectedSentenceResult = {
+  selected_sentences: SentencesResult[];
+};
 
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState<number>(0);
@@ -39,8 +49,33 @@ const PaperAnotation: NextPage = () => {
   const methods = useForm();
   const { handleSubmit } = methods;
 
-  const TesSubmit = handleSubmit(async (data) => {
-    console.log(data);
+  const onSubmit = handleSubmit(async (data) => {
+    const Data: dataExport[] = toExportData(Sections, paperValue);
+    const tag: string[] = [];
+
+    data.section_name.map((section: SelectedSentenceResult) => {
+      section.selected_sentences.map((sentences: SentencesResult) => {
+        sentences.sentences.map((sentence: string) => {
+          tag.push(sentence);
+        });
+      });
+    });
+
+    Data.map((data, index) => {
+      data.manual_label = tag[index];
+      data.checked = data.automatic_label !== tag[index];
+    });
+
+    const config = {
+      headers: { Authorization: `Bearer ${authToken}` },
+    };
+
+    const result = await axiosInstance.post(
+      '/api/tuwien/artu-az/saved',
+      Data,
+      config
+    );
+    console.log(result);
   });
 
   const Check = async () => {
@@ -90,7 +125,7 @@ const PaperAnotation: NextPage = () => {
 
               {/* Paper Data */}
               <FormProvider {...methods}>
-                <form onSubmit={TesSubmit}>
+                <form onSubmit={onSubmit}>
                   <Card
                     title={Sections && Sections[numberSection].section_name}
                   >
@@ -119,7 +154,7 @@ const PaperAnotation: NextPage = () => {
                                               <Radio
                                                 data={tag}
                                                 sentence={item}
-                                                dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                                dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
                                               />
                                             </div>
                                           );
@@ -147,7 +182,7 @@ const PaperAnotation: NextPage = () => {
                                             <Radio
                                               data={tag}
                                               sentence={item}
-                                              dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                              dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
                                             />
                                           </div>
                                         );
@@ -172,7 +207,7 @@ const PaperAnotation: NextPage = () => {
                                               <Radio
                                                 data={tag}
                                                 sentence={item}
-                                                dataRegister={`section_name.${Sections[numberSection].section_name}.selected_sentences.${indexSelected}.sentences${selected.par_id}.${index}`}
+                                                dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
                                               />
                                             </div>
                                           );
@@ -202,6 +237,7 @@ const PaperAnotation: NextPage = () => {
                         <input
                           type='checkbox'
                           className='checkbox checkbox-accent'
+                          {...methods.register('withLongsum')}
                         />
                       </label>
                     </div>
