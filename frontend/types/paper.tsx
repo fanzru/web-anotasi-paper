@@ -36,3 +36,19 @@ export type dataExport = {
   correct_section_head?: boolean;
   sent: string;
 };
+
+export type ZoneSummaryProps = {
+  category: string;
+  category_summary: string[];
+};
+
+export type LongSummaryProps = {
+  method: string;
+  summary: string[];
+  zones_summary: ZoneSummaryProps[];
+};
+
+export type LongSummariesProps = {
+  doc_id: string;
+  summaries: LongSummaryProps[];
+};
