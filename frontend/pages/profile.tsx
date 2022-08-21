@@ -134,7 +134,8 @@ const Profile = () => {
                   {dataUser?.list_papers?.map((data: PaperProfile, index) => {
                     return (
                       <tr>
-                        <th>{index + 1}</th>
+                        {/* <th>{index + 1}</th> */}
+                        <th>{data.id}</th>
                         <td>{removeStrip(data.paper_name)}</td>
                         <td>
                           <div className='flex gap-2'>
