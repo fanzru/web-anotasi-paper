@@ -108,7 +108,7 @@ const Annotation = () => {
                 <Card title={'Article Info'}>
                   <p className='mb-1'>
                     From the below categories, choose which type this article
-                    belongs to:
+                    belongs to :
                   </p>
                   {DataArticle.map((data, idx) => {
                     return (
@@ -138,7 +138,7 @@ const Annotation = () => {
 
                 <Card title={'Domain Info'}>
                   <p className='mb-2'>
-                    Please write which domain the article belongs to:
+                    Please write which domain the article belongs to :
                   </p>
                   <input
                     type='text'
@@ -158,11 +158,11 @@ const Annotation = () => {
                   </label>
                 </Card>
 
-                <Card title={'Paper Name'}>
-                  <p className='mb-2'>Please enter your paper title / name :</p>
+                <Card title={'Title'}>
+                  <p className='mb-2'>Please enter your paper title :</p>
                   <input
                     type='text'
-                    placeholder='Enter Domain'
+                    placeholder='Enter Title'
                     className='input input-bordered w-full'
                     {...register('paperName', { required: 'Required' })}
                   />
@@ -178,10 +178,8 @@ const Annotation = () => {
                   </label>
                 </Card>
 
-                <Card title={'Upload article'}>
-                  <p className='mb-2'>
-                    Choose CSV file of annotation progress or pdf article
-                  </p>
+                <Card title={'PDF'}>
+                  <p className='mb-2'>Please choose PDF article</p>
                   <FileUploader
                     handleChange={handleChange}
                     name='file'
@@ -192,7 +190,10 @@ const Annotation = () => {
                       className='h-[200px] border-2 w-[100%] rounded-md border-dashed opacity-60'
                     >
                       {isSetFile ? (
-                        <p>File Berhasil Di Tambahkan</p>
+                        <>
+                          <p>File Berhasil Di Tambahkan</p>
+                          <p className='font-medium'>{file?.name}</p>
+                        </>
                       ) : (
                         <p>Upload Disini</p>
                       )}

@@ -12,7 +12,6 @@ interface Radio {
 const Radio: FC<Radio> = ({ data, sentence, dataRegister }) => {
   const methods = useFormContext();
 
-  const isChecked = data.tag == sentence.tag ? true : false;
   let badgeColor;
 
   if (data.color == 'warning') {

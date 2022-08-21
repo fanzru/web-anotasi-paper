@@ -22,7 +22,8 @@ import BeforeLoad from '@/components/BeforeLoad';
 import { toExportData } from '@/lib/toExportData';
 import { axiosInstance } from '@/lib/axios';
 import { exportData } from '@/lib/exportData';
-import Link from 'next/link';
+import QuickTo from '@/components/QuickTo';
+import Guidelines from '@/components/Guidelines';
 
 type SentencesResult = {
   sentences: string[];
@@ -56,7 +57,6 @@ const PaperAnotation: NextPage = () => {
     const tag: string[] = [];
 
     if (data.withLongsum) {
-      // todo
       console.log(data);
     } else {
       data.section_name.map((section: SelectedSentenceResult) => {
@@ -126,182 +126,12 @@ const PaperAnotation: NextPage = () => {
             <div className='md:w-1/2 w-full overflow-auto'>
               {/* Colapse Quick To How*/}
               <CardCollapse title={'Quick How To'}>
-                <ul className='list-decimal px-2 ml-2'>
-                  <li>
-                    The first step:{' '}
-                    <span className='font-semibold'>
-                      check if the section heading doesn't belong to one of the
-                      paper sections or subsections
-                    </span>
-                    : mark the checkbox{' '}
-                    <span className='font-semibold'>
-                      "Wrong extracted heading"
-                    </span>
-                    . If the section is wrong one, you can choose whether to
-                    complete annotation or jump directly to step 3.
-                  </li>
-                  <li>
-                    For each sentence selected (highlighled) from the paper
-                    section below, choose one action of the following:
-                    <ul className='list-decimal ml-5'>
-                      <li>
-                        <span className='font-semibold'>
-                          If the label/annotation of the sentence marked by the
-                          bullet point is correct
-                        </span>
-                        : mark the checkbox{' '}
-                        <span className='font-semibold'>"Correct label"</span>
-                      </li>
-                      <li>
-                        <span className='font-semibold'>
-                          If there is something wrong with the extraction of the
-                          sentence (for example: the sentence doesn't belong to
-                          the context of the section):
-                        </span>
-                        select the radio button{' '}
-                        <span className='font-semibold'>
-                          "Wrong extraction"
-                        </span>{' '}
-                      </li>
-                      <li>
-                        <span className='font-semibold'>
-                          If the label/annotation of the sentence marked by the
-                          bullet point is not correct:
-                        </span>{' '}
-                        choose the collect label from the bullet points
-                      </li>
-                    </ul>
-                  </li>
-                  <li>
-                    Press "Next section" to proceed in the next section with
-                    selected sentences from the paper
-                  </li>
-                  <li>
-                    Repeat the process until sections with selected sentences
-                    are done.
-                  </li>
-                </ul>
-                <ul className='list-disc mt-4 px-2 ml-2'>
-                  <li>
-                    The description of the sentences labels and guidelines are
-                    described in the "Guidelines section" below
-                  </li>
-                  <li>
-                    You can download the sentences selected with there
-                    annotation and your correct annotation using the "Download
-                    progress" button in the top left corner
-                  </li>
-                  <li>
-                    If you left the session the progress will not be recorded
-                    and you will need to upload the paper from the start.
-                  </li>
-                </ul>
+                <QuickTo />
               </CardCollapse>
 
               {/*  Guidelines*/}
               <CardCollapse title={'Guidelines'}>
-                <div className='space-y-2'>
-                  <p className='text-2xl font-medium'>
-                    Argumentative Zoning annotation
-                  </p>
-                  <p className='text-xl font-medium'>Introduction</p>
-                  <p>
-                    Argumentative Zoning (AZ) is the analysis of the
-                    argumentative and rhetorical structure of a scientific
-                    paper. The basic idea of AZ is to assign each sentence in
-                    the scientific article to a specific category (known as
-                    zone). Each zone represents one of the article's component
-                    (e.g. the hypothesis, the background, the method, .. etc).
-                  </p>
-                  <p className='text-xl font-medium'>The task</p>
-                  <p>
-                    Given a scientific article and a sub set of sentences from
-                    the article, it’s required to identify the category of each
-                    sentence from the articles’ main components.
-                  </p>
-                  <p>
-                    In this work, we define a simplified schema of 4 categories
-                    that cover the articles main components. These categories
-                    are defined in the following table:
-                  </p>
-                </div>
-                <div className='mt-4'>
-                  <table className='table-auto'>
-                    <thead className='border-y-2'>
-                      <tr>
-                        <th>Argumentative zone</th>
-                        <th>Definition</th>
-                        <th>Example</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className='border-b'>
-                        <th>claim</th>
-                        <td>
-                          Sentence describing the research goal or the
-                          hypothesis behind research work
-                        </td>
-                        <td>
-                          This paper investigates the incorporation of diverse
-                          lexical, syntactic and semantic knowledge in
-                          feature-based relation extraction using SVM (P05-1053)
-                        </td>
-                      </tr>
-                      <tr className='border-b'>
-                        <th>method</th>
-                        <td>
-                          Sentence describing the research goal or the
-                          hypothesis behind research work
-                        </td>
-                        <td>
-                          This paper investigates the incorporation of diverse
-                          lexical, syntactic and semantic knowledge in
-                          feature-based relation extraction using SVM (P05-1053)
-                        </td>
-                      </tr>
-                      <tr className='border-b'>
-                        <th>result</th>
-                        <td>
-                          Sentence describing the research goal or the
-                          hypothesis behind research work
-                        </td>
-                        <td>
-                          This paper investigates the incorporation of diverse
-                          lexical, syntactic and semantic knowledge in
-                          feature-based relation extraction using SVM (P05-1053)
-                        </td>
-                      </tr>
-                      <tr className='border-b'>
-                        <th>conclusion</th>
-                        <td>
-                          Sentence describing the research goal or the
-                          hypothesis behind research work
-                        </td>
-                        <td>
-                          This paper investigates the incorporation of diverse
-                          lexical, syntactic and semantic knowledge in
-                          feature-based relation extraction using SVM (P05-1053)
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-                <p className='text-xl font-medium mt-3'>Detailed guidelines</p>
-                <p>
-                  For more detailed explaination for the task, the categories
-                  and the user guide, please refer to the full{' '}
-                  <span>
-                    <Link
-                      href={
-                        'https://owncloud.tuwien.ac.at/index.php/s/lqyUgQmAbZg2cf3'
-                      }
-                    >
-                      <a className='link' target={'_blank'}>
-                        guidelines
-                      </a>
-                    </Link>
-                  </span>
-                </p>
+                <Guidelines />
               </CardCollapse>
 
               {/* Paper Data */}
@@ -309,75 +139,52 @@ const PaperAnotation: NextPage = () => {
                 <form onSubmit={onSubmit}>
                   <Card
                     title={Sections && Sections[numberSection].section_name}
+                    numSection={numberSection}
                   >
-                    {Sections &&
-                      Sections[numberSection].selected_sentences.map(
-                        (selected: selectedSentence, indexSelected) => {
-                          return selected.sentences.map(
-                            (item, index, element) => {
-                              if (index == 0) {
-                                return (
-                                  <>
-                                    <div key={index}>
-                                      <Sentence data={item} colored />
-                                      {element.length > 1 ? (
-                                        <Sentence data={element[index + 1]} />
-                                      ) : (
-                                        ''
-                                      )}
-                                      <div className='flex flex-wrap'>
-                                        {Tag.map((tag, idx) => {
-                                          return (
-                                            <div
-                                              className='form-control'
-                                              key={idx}
-                                            >
-                                              <Radio
-                                                data={tag}
-                                                sentence={item}
-                                                dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
-                                              />
-                                            </div>
-                                          );
-                                        })}
+                    {Sections.map((Section) => {
+                      if (Sections.indexOf(Section) === numberSection) {
+                        return Sections[numberSection].selected_sentences.map(
+                          (selected: selectedSentence, indexSelected) => {
+                            return selected.sentences.map(
+                              (item, index, element) => {
+                                if (index == 0) {
+                                  return (
+                                    <>
+                                      <div key={index}>
+                                        <Sentence data={item} colored />
+                                        {element.length > 1 ? (
+                                          <Sentence data={element[index + 1]} />
+                                        ) : (
+                                          ''
+                                        )}
+                                        <div className='flex flex-wrap'>
+                                          {Tag.map((tag, idx) => {
+                                            return (
+                                              <div
+                                                className='form-control'
+                                                key={idx}
+                                              >
+                                                <Radio
+                                                  data={tag}
+                                                  sentence={item}
+                                                  dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
+                                                />
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div className='divider'></div>
-                                  </>
-                                );
-                              } else if (
-                                index ==
-                                selected.sentences.length - 1
-                              ) {
-                                return (
-                                  <div key={index}>
-                                    <Sentence data={element[index - 1]} />
-                                    <Sentence data={item} colored />
-                                    <div className='flex flex-wrap'>
-                                      {Tag.map((tag, idx) => {
-                                        return (
-                                          <div
-                                            className='form-control'
-                                            key={idx}
-                                          >
-                                            <Radio
-                                              data={tag}
-                                              sentence={item}
-                                              dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
-                                            />
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                );
-                              } else {
-                                return (
-                                  <>
+                                      <div className='divider'></div>
+                                    </>
+                                  );
+                                } else if (
+                                  index ==
+                                  selected.sentences.length - 1
+                                ) {
+                                  return (
                                     <div key={index}>
                                       <Sentence data={element[index - 1]} />
                                       <Sentence data={item} colored />
-                                      <Sentence data={element[index + 1]} />
                                       <div className='flex flex-wrap'>
                                         {Tag.map((tag, idx) => {
                                           return (
@@ -395,14 +202,41 @@ const PaperAnotation: NextPage = () => {
                                         })}
                                       </div>
                                     </div>
-                                    <div className='divider'></div>
-                                  </>
-                                );
+                                  );
+                                } else {
+                                  return (
+                                    <>
+                                      <div key={index}>
+                                        <Sentence data={element[index - 1]} />
+                                        <Sentence data={item} colored />
+                                        <Sentence data={element[index + 1]} />
+                                        <div className='flex flex-wrap'>
+                                          {Tag.map((tag, idx) => {
+                                            return (
+                                              <div
+                                                className='form-control'
+                                                key={idx}
+                                              >
+                                                <Radio
+                                                  data={tag}
+                                                  sentence={item}
+                                                  dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
+                                                />
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                      <div className='divider'></div>
+                                    </>
+                                  );
+                                }
                               }
-                            }
-                          );
-                        }
-                      )}
+                            );
+                          }
+                        );
+                      }
+                    })}
                   </Card>
                   <progress
                     className='progress progress-primary w-full px-1'
@@ -413,7 +247,7 @@ const PaperAnotation: NextPage = () => {
                     <div className='form-control py-1 items-end'>
                       <label className='cursor-pointer label'>
                         <span className='label-text mr-3'>
-                          Compare with Longsum
+                          Summary evaluation
                         </span>
                         <input
                           type='checkbox'
