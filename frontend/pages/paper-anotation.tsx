@@ -16,7 +16,7 @@ import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
-import { changePaperValue, selectPaperValue } from '@/redux/paperSlice';
+import { selectPaperValue } from '@/redux/paperSlice';
 import { selectPdfValue } from '@/redux/pdfSlice';
 import BeforeLoad from '@/components/BeforeLoad';
 import { toExportData } from '@/lib/toExportData';
@@ -48,6 +48,7 @@ const PaperAnotation: NextPage = () => {
     paperValue.sections?.filter(
       (section) => section.selected_sentences.length > 0
     );
+  console.log(Sections);
 
   const methods = useForm();
   const { handleSubmit } = methods;
@@ -57,7 +58,6 @@ const PaperAnotation: NextPage = () => {
     const tag: string[] = [];
 
     if (data.withLongsum) {
-      // todo
       console.log(data);
     } else {
       data.section_name.map((section: SelectedSentenceResult) => {
@@ -99,6 +99,8 @@ const PaperAnotation: NextPage = () => {
   useEffect(() => {
     Check();
   }, []);
+
+  for (let i: number = 0; i < Sections.length; i++) {}
 
   return (
     <>
@@ -142,74 +144,50 @@ const PaperAnotation: NextPage = () => {
                     title={Sections && Sections[numberSection].section_name}
                     numSection={numberSection}
                   >
-                    {Sections &&
-                      Sections[numberSection].selected_sentences.map(
-                        (selected: selectedSentence, indexSelected) => {
-                          return selected.sentences.map(
-                            (item, index, element) => {
-                              if (index == 0) {
-                                return (
-                                  <>
-                                    <div key={index}>
-                                      <Sentence data={item} colored />
-                                      {element.length > 1 ? (
-                                        <Sentence data={element[index + 1]} />
-                                      ) : (
-                                        ''
-                                      )}
-                                      <div className='flex flex-wrap'>
-                                        {Tag.map((tag, idx) => {
-                                          return (
-                                            <div
-                                              className='form-control'
-                                              key={idx}
-                                            >
-                                              <Radio
-                                                data={tag}
-                                                sentence={item}
-                                                dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
-                                              />
-                                            </div>
-                                          );
-                                        })}
+                    {Sections.map((Tes, indexSection) => {
+                      if (indexSection === numberSection) {
+                        return Sections[numberSection].selected_sentences.map(
+                          (selected: selectedSentence, indexSelected) => {
+                            return selected.sentences.map(
+                              (item, index, element) => {
+                                if (index == 0) {
+                                  return (
+                                    <>
+                                      <div key={index}>
+                                        <Sentence data={item} colored />
+                                        {element.length > 1 ? (
+                                          <Sentence data={element[index + 1]} />
+                                        ) : (
+                                          ''
+                                        )}
+                                        <div className='flex flex-wrap'>
+                                          {Tag.map((tag, idx) => {
+                                            return (
+                                              <div
+                                                className='form-control'
+                                                key={idx}
+                                              >
+                                                <Radio
+                                                  data={tag}
+                                                  sentence={item}
+                                                  dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
+                                                />
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
                                       </div>
-                                    </div>
-                                    <div className='divider'></div>
-                                  </>
-                                );
-                              } else if (
-                                index ==
-                                selected.sentences.length - 1
-                              ) {
-                                return (
-                                  <div key={index}>
-                                    <Sentence data={element[index - 1]} />
-                                    <Sentence data={item} colored />
-                                    <div className='flex flex-wrap'>
-                                      {Tag.map((tag, idx) => {
-                                        return (
-                                          <div
-                                            className='form-control'
-                                            key={idx}
-                                          >
-                                            <Radio
-                                              data={tag}
-                                              sentence={item}
-                                              dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
-                                            />
-                                          </div>
-                                        );
-                                      })}
-                                    </div>
-                                  </div>
-                                );
-                              } else {
-                                return (
-                                  <>
+                                      <div className='divider'></div>
+                                    </>
+                                  );
+                                } else if (
+                                  index ==
+                                  selected.sentences.length - 1
+                                ) {
+                                  return (
                                     <div key={index}>
                                       <Sentence data={element[index - 1]} />
                                       <Sentence data={item} colored />
-                                      <Sentence data={element[index + 1]} />
                                       <div className='flex flex-wrap'>
                                         {Tag.map((tag, idx) => {
                                           return (
@@ -227,14 +205,41 @@ const PaperAnotation: NextPage = () => {
                                         })}
                                       </div>
                                     </div>
-                                    <div className='divider'></div>
-                                  </>
-                                );
+                                  );
+                                } else {
+                                  return (
+                                    <>
+                                      <div key={index}>
+                                        <Sentence data={element[index - 1]} />
+                                        <Sentence data={item} colored />
+                                        <Sentence data={element[index + 1]} />
+                                        <div className='flex flex-wrap'>
+                                          {Tag.map((tag, idx) => {
+                                            return (
+                                              <div
+                                                className='form-control'
+                                                key={idx}
+                                              >
+                                                <Radio
+                                                  data={tag}
+                                                  sentence={item}
+                                                  dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
+                                                />
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      </div>
+                                      <div className='divider'></div>
+                                    </>
+                                  );
+                                }
                               }
-                            }
-                          );
-                        }
-                      )}
+                            );
+                          }
+                        );
+                      }
+                    })}
                   </Card>
                   <progress
                     className='progress progress-primary w-full px-1'

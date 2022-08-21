@@ -11,6 +11,8 @@ interface Card {
 const Card: FC<Card> = ({ title, children, numSection }) => {
   const methods = useFormContext();
   const { pathname } = useRouter();
+  // const { register } = methods;
+  // const touched = formState.touchedFields
 
   return (
     <div className='w-full border-2 border-gray-300 rounded-lg mb-6'>
@@ -23,9 +25,12 @@ const Card: FC<Card> = ({ title, children, numSection }) => {
                 <input
                   type='checkbox'
                   className='checkbox checkbox-sm mr-2'
-                  {...methods.register(
-                    `section_name.${numSection}.wrongextracted`
-                  )}
+                  // checked={touched.section_name.map((tes, idx) => {
+                  //   if (idx == numSection) {
+                  //     return tes.wrongextracted ? false : true
+                  //   }
+                  // })}
+                  {...methods.register(`section_name.${numSection}.wrongextracted`)}
                 />
                 <span className='label-text badge badge-error'>
                   Wrong extracted heading
