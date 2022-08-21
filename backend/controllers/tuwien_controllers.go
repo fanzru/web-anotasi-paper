@@ -156,16 +156,17 @@ func SavedArtuAzController(c echo.Context) error {
 	modelsPaperDB := []models.ArtuAzDataPaper{}
 	for _, v := range *modelsPaper {
 		modelsPaperDB = append(modelsPaperDB, models.ArtuAzDataPaper{
-			UserPaperID:    v.UserPaperID,
-			UserId:         user.Id,
-			PaperName:      v.PaperName,
-			SectionName:    v.SectionName,
-			ParId:          v.ParId,
-			SentId:         v.SentId,
-			AutomaticLabel: v.AutomaticLabel,
-			ManualLabel:    v.ManualLabel,
-			Checked:        v.Checked,
-			Sent:           v.Sent,
+			UserPaperID:        v.UserPaperID,
+			UserId:             user.Id,
+			PaperName:          v.PaperName,
+			SectionName:        v.SectionName,
+			ParId:              v.ParId,
+			SentId:             v.SentId,
+			AutomaticLabel:     v.AutomaticLabel,
+			ManualLabel:        v.ManualLabel,
+			Checked:            v.Checked,
+			CorrectSectionHead: v.CorrectSectionHead,
+			Sent:               v.Sent,
 		})
 	}
 
@@ -258,6 +259,78 @@ func ArtuSummaController(c echo.Context) error {
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", responseResult))
 }
 
+func UserLongsumSubmitController(c echo.Context) error {
+	user, status := utils.ExtractClaims(c)
+	if !status {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	}
+	request := &models.UserLongSummarySubmitRequest{}
+	err := c.Bind(request)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
+	}
+
+	db := config.GetConnection()
+
+	userPaperDB := models.UserPaper{}
+	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", request.UserPaperID, user.Id).First(&userPaperDB)
+	if resultDB.RowsAffected == 0 {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
+	}
+
+	if userPaperDB.IsDone {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper already submited!", http.StatusBadRequest))
+	}
+	// longsumm summary process
+	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
+	for _, summary := range request.LongsummSummary.Summaries {
+		if summary.Method == "lmjm" {
+			for i, zonesSumarry := range summary.ZonesSummary {
+				for j, sent := range zonesSumarry.CategorySummary {
+					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+						UserPaperID:    request.UserPaperID,
+						UserId:         user.Id,
+						PaperName:      userPaperDB.PaperName,
+						SectionName:    "",
+						ParId:          int64(i),
+						SentId:         fmt.Sprintf("sent_%d_%d", i, j),
+						Sent:           sent,
+						AutomaticLabel: zonesSumarry.Category,
+						ManualLabel:    "",
+						Checked:        false,
+					})
+				}
+			}
+		}
+	}
+	modelsUserSummaryDB := []models.ArtuAzDataPaper{}
+	for _, v := range request.UserSummary {
+		modelsUserSummaryDB = append(modelsUserSummaryDB, models.ArtuAzDataPaper{
+			UserPaperID:        v.UserPaperID,
+			UserId:             user.Id,
+			PaperName:          v.PaperName,
+			SectionName:        v.SectionName,
+			ParId:              v.ParId,
+			SentId:             v.SentId,
+			AutomaticLabel:     v.AutomaticLabel,
+			ManualLabel:        v.ManualLabel,
+			Checked:            v.Checked,
+			CorrectSectionHead: v.CorrectSectionHead,
+			Sent:               v.Sent,
+		})
+	}
+	// todo : saved to db
+	db.Table("artu_summa_data_papers").CreateInBatches(artuSummarySavedDB, 100)
+	db.Table("artu_az_data_papers").CreateInBatches(modelsUserSummaryDB, 100)
+	db.Table("user_papers").Where("id = ? AND is_done = ?", request.UserPaperID, false).Updates(map[string]interface{}{
+		"is_done":                  true,
+		"selected_summary":         request.SelectedSummary,
+		"comment_selected_summary": request.CommentSelectedSummary,
+	})
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", nil))
+}
+
+// unused artu summa submit
 func SavedArtuSummaController(c echo.Context) error {
 	user, status := utils.ExtractClaims(c)
 	if !status {
@@ -281,7 +354,6 @@ func SavedArtuSummaController(c echo.Context) error {
 	for _, summary := range modelsPaper.Summaries {
 		if summary.Method == "lmjm" {
 			for i, zonesSumarry := range summary.ZonesSummary {
-				log.Println("----- ke :", i)
 				for j, sent := range zonesSumarry.CategorySummary {
 					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
 						UserPaperID:    modelsPaper.UserPaperID,
