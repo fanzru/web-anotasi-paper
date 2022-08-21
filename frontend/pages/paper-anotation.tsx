@@ -48,7 +48,6 @@ const PaperAnotation: NextPage = () => {
     paperValue.sections?.filter(
       (section) => section.selected_sentences.length > 0
     );
-  console.log(Sections);
 
   const methods = useForm();
   const { handleSubmit } = methods;
@@ -100,8 +99,6 @@ const PaperAnotation: NextPage = () => {
     Check();
   }, []);
 
-  for (let i: number = 0; i < Sections.length; i++) {}
-
   return (
     <>
       <BeforeLoad />
@@ -144,8 +141,8 @@ const PaperAnotation: NextPage = () => {
                     title={Sections && Sections[numberSection].section_name}
                     numSection={numberSection}
                   >
-                    {Sections.map((Tes, indexSection) => {
-                      if (indexSection === numberSection) {
+                    {Sections.map((Section) => {
+                      if (Sections.indexOf(Section) === numberSection) {
                         return Sections[numberSection].selected_sentences.map(
                           (selected: selectedSentence, indexSelected) => {
                             return selected.sentences.map(
