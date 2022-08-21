@@ -19,5 +19,7 @@ func TuwienRoutes(e *echo.Echo) *echo.Echo {
 	g.POST("/artu-summarize/:user_paper_id", controllers.ArtuSummaController)
 	g.POST("/artu-summarize/saved", controllers.SavedArtuSummaController)
 	g.POST("/test/upload", controllers.UploadPdfToS3Storage)
+
+	g.POST("/user-longsumm/submit", controllers.UserLongsumSubmitController)
 	return e
 }
