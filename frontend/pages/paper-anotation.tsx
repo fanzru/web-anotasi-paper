@@ -15,7 +15,7 @@ import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import { FormProvider, useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { selectPdfValue } from '@/redux/pdfSlice';
 import BeforeLoad from '@/components/BeforeLoad';
@@ -24,6 +24,7 @@ import { axiosInstance } from '@/lib/axios';
 import { exportData } from '@/lib/exportData';
 import QuickTo from '@/components/QuickTo';
 import Guidelines from '@/components/Guidelines';
+import { changeUserSummValue } from '@/redux/userSummarizeSlice';
 
 type SentencesResult = {
   sentences: string[];
@@ -31,6 +32,12 @@ type SentencesResult = {
 
 type SelectedSentenceResult = {
   selected_sentences: SentencesResult[];
+  wrongextracted: boolean;
+};
+
+type UserTag = {
+  tag: string;
+  wrongextracted: boolean;
 };
 
 const PaperAnotation: NextPage = () => {
@@ -39,8 +46,8 @@ const PaperAnotation: NextPage = () => {
   const cookie = new Cookies();
   const authToken = cookie.get('token');
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
+  const dispatch = useDispatch();
   const paperValue = useSelector(selectPaperValue);
-
   const pdfValue = useSelector(selectPdfValue);
 
   const Sections =
@@ -54,34 +61,39 @@ const PaperAnotation: NextPage = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     const Data: dataExport[] = toExportData(Sections, paperValue);
-    const tag: string[] = [];
+    const tag: UserTag[] = [];
 
-    if (data.withLongsum) {
-      console.log(data);
-    } else {
-      data.section_name.map((section: SelectedSentenceResult) => {
-        section.selected_sentences.map((sentences: SentencesResult) => {
-          sentences.sentences.map((sentence: string) => {
-            tag.push(sentence);
+    data.section_name.map((section: SelectedSentenceResult) => {
+      section.selected_sentences.map((sentences: SentencesResult) => {
+        sentences.sentences.map((sentence: string) => {
+          tag.push({
+            tag: sentence,
+            wrongextracted: section.wrongextracted,
           });
         });
       });
+    });
 
-      Data.map((data, index) => {
-        data.manual_label = tag[index];
-        data.checked = data.automatic_label !== tag[index];
-      });
+    Data.map((data, index) => {
+      data.manual_label = tag[index].tag;
+      data.checked = data.automatic_label !== tag[index].tag;
+      data.correct_section_head = !tag[index].wrongextracted;
+    });
+    console.log(Data);
 
+    if (data.withLongsum) {
+      dispatch(changeUserSummValue(Data));
+
+      router.push('/paper-compare');
+    } else {
       const config = {
         headers: { Authorization: `Bearer ${authToken}` },
       };
-
       const result = await axiosInstance.post(
         '/api/tuwien/artu-az/saved',
         Data,
         config
       );
-
       if (result.data.status) {
         exportData(Data, Data[0].paper_name);
         router.push('/artu-az-end');
@@ -141,75 +153,53 @@ const PaperAnotation: NextPage = () => {
                     title={Sections && Sections[numberSection].section_name}
                     numSection={numberSection}
                   >
-                    {Sections.map((Section) => {
-                      if (Sections.indexOf(Section) === numberSection) {
-                        return Sections[numberSection].selected_sentences.map(
-                          (selected: selectedSentence, indexSelected) => {
-                            return selected.sentences.map(
-                              (item, index, element) => {
-                                if (index == 0) {
-                                  return (
-                                    <>
-                                      <div key={index}>
-                                        <Sentence data={item} colored />
-                                        {element.length > 1 ? (
-                                          <Sentence data={element[index + 1]} />
-                                        ) : (
-                                          ''
-                                        )}
-                                        <div className='flex flex-wrap'>
-                                          {Tag.map((tag, idx) => {
-                                            return (
-                                              <div
-                                                className='form-control'
-                                                key={idx}
-                                              >
-                                                <Radio
-                                                  data={tag}
-                                                  sentence={item}
-                                                  dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
-                                                />
-                                              </div>
-                                            );
-                                          })}
+                    {Sections &&
+                      Sections.map((Section) => {
+                        if (Sections.indexOf(Section) === numberSection) {
+                          return Sections[numberSection].selected_sentences.map(
+                            (selected: selectedSentence, indexSelected) => {
+                              return selected.sentences.map(
+                                (item, index, element) => {
+                                  if (index == 0) {
+                                    return (
+                                      <>
+                                        <div key={index}>
+                                          <Sentence data={item} colored />
+                                          {element.length > 1 ? (
+                                            <Sentence
+                                              data={element[index + 1]}
+                                            />
+                                          ) : (
+                                            ''
+                                          )}
+                                          <div className='flex flex-wrap'>
+                                            {Tag.map((tag, idx) => {
+                                              return (
+                                                <div
+                                                  className='form-control'
+                                                  key={idx}
+                                                >
+                                                  <Radio
+                                                    data={tag}
+                                                    sentence={item}
+                                                    dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
+                                                  />
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
                                         </div>
-                                      </div>
-                                      <div className='divider'></div>
-                                    </>
-                                  );
-                                } else if (
-                                  index ==
-                                  selected.sentences.length - 1
-                                ) {
-                                  return (
-                                    <div key={index}>
-                                      <Sentence data={element[index - 1]} />
-                                      <Sentence data={item} colored />
-                                      <div className='flex flex-wrap'>
-                                        {Tag.map((tag, idx) => {
-                                          return (
-                                            <div
-                                              className='form-control'
-                                              key={idx}
-                                            >
-                                              <Radio
-                                                data={tag}
-                                                sentence={item}
-                                                dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
-                                              />
-                                            </div>
-                                          );
-                                        })}
-                                      </div>
-                                    </div>
-                                  );
-                                } else {
-                                  return (
-                                    <>
+                                        <div className='divider'></div>
+                                      </>
+                                    );
+                                  } else if (
+                                    index ==
+                                    selected.sentences.length - 1
+                                  ) {
+                                    return (
                                       <div key={index}>
                                         <Sentence data={element[index - 1]} />
                                         <Sentence data={item} colored />
-                                        <Sentence data={element[index + 1]} />
                                         <div className='flex flex-wrap'>
                                           {Tag.map((tag, idx) => {
                                             return (
@@ -227,16 +217,41 @@ const PaperAnotation: NextPage = () => {
                                           })}
                                         </div>
                                       </div>
-                                      <div className='divider'></div>
-                                    </>
-                                  );
+                                    );
+                                  } else {
+                                    return (
+                                      <>
+                                        <div key={index}>
+                                          <Sentence data={element[index - 1]} />
+                                          <Sentence data={item} colored />
+                                          <Sentence data={element[index + 1]} />
+                                          <div className='flex flex-wrap'>
+                                            {Tag.map((tag, idx) => {
+                                              return (
+                                                <div
+                                                  className='form-control'
+                                                  key={idx}
+                                                >
+                                                  <Radio
+                                                    data={tag}
+                                                    sentence={item}
+                                                    dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
+                                                  />
+                                                </div>
+                                              );
+                                            })}
+                                          </div>
+                                        </div>
+                                        <div className='divider'></div>
+                                      </>
+                                    );
+                                  }
                                 }
-                              }
-                            );
-                          }
-                        );
-                      }
-                    })}
+                              );
+                            }
+                          );
+                        }
+                      })}
                   </Card>
                   <progress
                     className='progress progress-primary w-full px-1'

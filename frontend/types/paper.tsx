@@ -33,5 +33,6 @@ export type dataExport = {
   automatic_label: string;
   manual_label: string;
   checked: boolean;
+  correct_section_head?: boolean;
   sent: string;
 };
