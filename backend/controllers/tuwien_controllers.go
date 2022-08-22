@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	s3 "backend/utils/s3"
@@ -196,13 +197,21 @@ func ArtuSummaController(c echo.Context) error {
 
 	userId := c.Param("user_id")
 	if userId == "" {
-		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_id in param!", http.StatusBadRequest))
 	}
 	userPaperId := c.Param("user_paper_id")
 	if userPaperId == "" {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
 	}
 
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_id with integer!", http.StatusBadRequest))
+	}
+	userPaperIdInt, err := strconv.Atoi(userPaperId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id with integer!", http.StatusBadRequest))
+	}
 	db := config.GetConnection()
 
 	userPaperDB := models.UserPaper{}
@@ -212,7 +221,7 @@ func ArtuSummaController(c echo.Context) error {
 	}
 	srcFile := userPaperDB.LinkPdf
 
-	err := utils.DownloadFile("temporary.pdf", srcFile)
+	err = utils.DownloadFile("temporary.pdf", srcFile)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("PDF file s3 error!", http.StatusInternalServerError))
@@ -260,8 +269,28 @@ func ArtuSummaController(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Unmarshal error", http.StatusInternalServerError))
 	}
-
-	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", responseResult))
+	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
+	for _, summary := range responseResult.Summaries {
+		if summary.Method == "lmjm" {
+			for i, zonesSumarry := range summary.ZonesSummary {
+				for j, sent := range zonesSumarry.CategorySummary {
+					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+						UserPaperID:    int64(userPaperIdInt),
+						UserId:         int64(userIdInt),
+						PaperName:      userPaperDB.PaperName,
+						SectionName:    "",
+						ParId:          int64(i),
+						SentId:         fmt.Sprintf("sent_%d_%d", i, j),
+						Sent:           sent,
+						AutomaticLabel: zonesSumarry.Category,
+						ManualLabel:    zonesSumarry.Category,
+						Checked:        false,
+					})
+				}
+			}
+		}
+	}
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", artuSummarySavedDB))
 }
 
 func UserLongsumSubmitController(c echo.Context) error {
