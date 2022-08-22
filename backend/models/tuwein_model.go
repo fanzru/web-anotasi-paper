@@ -102,5 +102,5 @@ type UserLongSummarySubmitRequest struct {
 	SelectedSummary        string               `json:"selected_summary"`
 	CommentSelectedSummary string               `json:"comment_selected_summary"`
 	UserSummary            []ArtuAzDataPaper    `json:"user_summary"`
-	LongsummSummary        DataPaperArtuSummary `json:"longsumm_summary"`
+	LongsummSummary        []ArtuSummaDataPaper `json:"longsumm_summary"`
 }

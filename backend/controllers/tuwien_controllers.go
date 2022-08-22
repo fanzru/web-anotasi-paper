@@ -298,10 +298,11 @@ func UserLongsumSubmitController(c echo.Context) error {
 	if !status {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
 	}
+
 	request := &models.UserLongSummarySubmitRequest{}
 	err := c.Bind(request)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind error", http.StatusInternalServerError))
 	}
 
 	db := config.GetConnection()
@@ -311,7 +312,6 @@ func UserLongsumSubmitController(c echo.Context) error {
 	if resultDB.RowsAffected == 0 {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
 	}
-
 	if userPaperDB.IsDone {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper already submited!", http.StatusBadRequest))
 	}
@@ -338,7 +338,7 @@ func UserLongsumSubmitController(c echo.Context) error {
 	// 	}
 	// }
 	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
-	for _, v := range request.UserSummary {
+	for _, v := range request.LongsummSummary {
 		artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
 			UserPaperID:        v.UserPaperID,
 			UserId:             user.Id,
@@ -370,7 +370,7 @@ func UserLongsumSubmitController(c echo.Context) error {
 			Sent:               v.Sent,
 		})
 	}
-	// todo : saved to db
+
 	db.Table("artu_summa_data_papers").CreateInBatches(artuSummarySavedDB, 100)
 	db.Table("artu_az_data_papers").CreateInBatches(modelsUserSummaryDB, 100)
 	db.Table("user_papers").Where("id = ? AND is_done = ?", request.UserPaperID, false).Updates(map[string]interface{}{
