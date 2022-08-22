@@ -25,6 +25,7 @@ import { exportData } from '@/lib/exportData';
 import QuickTo from '@/components/QuickTo';
 import Guidelines from '@/components/Guidelines';
 import { changeUserSummValue } from '@/redux/userSummarizeSlice';
+import axios from 'axios';
 
 type SentencesResult = {
   sentences: string[];
@@ -79,21 +80,44 @@ const PaperAnotation: NextPage = () => {
       data.checked = data.automatic_label !== tag[index].tag;
       data.correct_section_head = !tag[index].wrongextracted;
     });
-    console.log(Data);
 
     if (data.withLongsum) {
       dispatch(changeUserSummValue(Data));
 
-      router.push('/paper-compare');
+      const config = {
+        headers: { Authorization: `Bearer ${authToken}` },
+      };
+
+      // const result = await axiosInstance.post(`/api/tuwien/artu-summarize/30`, {
+      //   headers: {
+      //     Authorization: `Bearer ${authToken}`,
+      //   },
+      // });
+
+      axios
+        .post('https://riset.fanzru.dev/api/tuwien/artu-summarize/32', config)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      // if (result.data.status) {
+      //   // router.push('/paper-compare');
+      //   console.log(result.data.value);
+      // }
     } else {
       const config = {
         headers: { Authorization: `Bearer ${authToken}` },
       };
+
       const result = await axiosInstance.post(
         '/api/tuwien/artu-az/saved',
         Data,
         config
       );
+
       if (result.data.status) {
         exportData(Data, Data[0].paper_name);
         router.push('/artu-az-end');
