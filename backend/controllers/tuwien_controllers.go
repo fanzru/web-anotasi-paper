@@ -338,7 +338,7 @@ func UserLongsumSubmitController(c echo.Context) error {
 	// 	}
 	// }
 	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
-	for _, v := range request.LongsummSummary {
+	for _, v := range request.UserSummary {
 		artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
 			UserPaperID:        v.UserPaperID,
 			UserId:             user.Id,
