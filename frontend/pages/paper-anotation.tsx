@@ -25,7 +25,9 @@ import { exportData } from '@/lib/exportData';
 import QuickTo from '@/components/QuickTo';
 import Guidelines from '@/components/Guidelines';
 import { changeUserSummValue } from '@/redux/userSummarizeSlice';
-import axios from 'axios';
+import { Profile } from '@/types/profil';
+import { toast } from 'react-toastify';
+import { changeLongSumValue } from '@/redux/longSummarizeSlice';
 
 type SentencesResult = {
   sentences: string[];
@@ -49,7 +51,9 @@ const PaperAnotation: NextPage = () => {
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const dispatch = useDispatch();
   const paperValue = useSelector(selectPaperValue);
+  
   const pdfValue = useSelector(selectPdfValue);
+  const [dataUser, setDataUser] = useState<Profile>();
 
   const Sections =
     paperValue &&
@@ -57,13 +61,28 @@ const PaperAnotation: NextPage = () => {
       (section) => section.selected_sentences.length > 0
     );
 
+  const getProfil = () => {
+    axiosInstance
+      .get('/api/user/', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      })
+      .then((res) => {
+        setDataUser(res.data.value);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   const methods = useForm();
   const { handleSubmit } = methods;
 
   const onSubmit = handleSubmit(async (data) => {
     const Data: dataExport[] = toExportData(Sections, paperValue);
     const tag: UserTag[] = [];
-
+    
     data.section_name.map((section: SelectedSentenceResult) => {
       section.selected_sentences.map((sentences: SentencesResult) => {
         sentences.sentences.map((sentence: string) => {
@@ -83,30 +102,23 @@ const PaperAnotation: NextPage = () => {
 
     if (data.withLongsum) {
       dispatch(changeUserSummValue(Data));
+      console.log(Data);
+      
+      const res = await toast.promise(
+        axiosInstance.post(
+          `/api/tuwien/artu-summarize/${Data[0].user_paper_id}/${dataUser?.id}`
+        ),
+        {
+          pending: 'Loading..',
+          success: 'Upload Success!',
+          error: 'Upload Failed!',
+        }
+      );
 
-      const config = {
-        headers: { Authorization: `Bearer ${authToken}` },
-      };
-
-      // const result = await axiosInstance.post(`/api/tuwien/artu-summarize/30`, {
-      //   headers: {
-      //     Authorization: `Bearer ${authToken}`,
-      //   },
-      // });
-
-      axios
-        .post('https://riset.fanzru.dev/api/tuwien/artu-summarize/32', config)
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-      // if (result.data.status) {
-      //   // router.push('/paper-compare');
-      //   console.log(result.data.value);
-      // }
+      if (res.data.status) {
+        dispatch(changeLongSumValue(res.data.value))
+        router.push('/paper-compare');
+      }
     } else {
       const config = {
         headers: { Authorization: `Bearer ${authToken}` },
@@ -132,6 +144,7 @@ const PaperAnotation: NextPage = () => {
   };
 
   useEffect(() => {
+    getProfil();
     Check();
   }, []);
 
