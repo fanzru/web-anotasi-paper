@@ -201,9 +201,7 @@ const Annotation = () => {
                   </FileUploader>
                 </Card>
 
-                <div className='mb-5'>
-                  <button className='btn w-full  mt-6'>Submit</button>
-                </div>
+                <button className='btn w-full mb-5'>Submit</button>
               </form>
             </div>
           </div>

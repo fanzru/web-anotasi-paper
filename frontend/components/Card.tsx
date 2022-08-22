@@ -28,10 +28,13 @@ const Card: FC<Card> = ({ title, children, numSection }) => {
           <p className='ml-1'>{title}</p>
           {pathname === '/paper-anotation' ? (
             <div className='form-control'>
-              {Sections.map((section) => {
+              {Sections && Sections.map((section) => {
                 if (numSection === Sections.indexOf(section)) {
                   return (
-                    <label className='cursor-pointer label'>
+                    <label
+                      className='cursor-pointer label'
+                      key={Sections.indexOf(section)}
+                    >
                       <input
                         type='checkbox'
                         className='checkbox checkbox-sm mr-2'
