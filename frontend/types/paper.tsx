@@ -25,7 +25,8 @@ export type dataPaper = {
 };
 
 export type dataExport = {
-  user_paper_id: number;
+  user_paper_id?: number;
+  user_id?: number;
   paper_name: string;
   section_name: string;
   par_id: number;
