@@ -378,7 +378,7 @@ func UserLongsumSubmitController(c echo.Context) error {
 		"selected_summary":         request.SelectedSummary,
 		"comment_selected_summary": request.CommentSelectedSummary,
 	})
-	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", nil))
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", request))
 }
 
 // unused artu summa submit
