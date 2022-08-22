@@ -5,7 +5,7 @@ import { RootState } from './globalStore';
 const longSummarizeSlice = createSlice({
   name: 'longsum',
   initialState: {
-    value: {} as dataExport,
+    value: [] as dataExport[],
   },
   reducers: {
     changeLongSumValue: (state, action) => {

@@ -5,7 +5,7 @@ import { RootState } from './globalStore';
 const userSummarizeSlice = createSlice({
   name: 'usersum',
   initialState: {
-    value: {} as dataExport,
+    value: [] as dataExport[],
   },
   reducers: {
     changeUserSummValue: (state, action) => {
