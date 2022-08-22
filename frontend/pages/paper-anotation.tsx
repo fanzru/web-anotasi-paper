@@ -102,7 +102,6 @@ const PaperAnotation: NextPage = () => {
 
     if (data.withLongsum) {
       dispatch(changeUserSummValue(Data));
-      console.log(Data);
       
       const res = await toast.promise(
         axiosInstance.post(

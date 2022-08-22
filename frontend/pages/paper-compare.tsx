@@ -51,8 +51,7 @@ const Compare = () => {
       );
 
       if (res.data.status) {
-        console.log(res);
-        router.push('/artuz-az-end');
+        router.push('/artu-az-end');
         dispatch(changeUserSummValue([]));
         dispatch(changeLongSumValue([]));
       }
@@ -76,9 +75,6 @@ const Compare = () => {
   const LongManualName = LongManualDummy.filter((data, index) => {
     return LongManualDummy.indexOf(data) === index;
   });
-
-  console.log('User ===== ' + UserManualName);
-  console.log('Long ===== ' + LongManualName);
 
   type DummyProps = {
     type: string;
