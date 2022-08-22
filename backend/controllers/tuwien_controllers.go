@@ -189,9 +189,14 @@ func SavedArtuAzController(c echo.Context) error {
 }
 
 func ArtuSummaController(c echo.Context) error {
-	user, status := utils.ExtractClaims(c)
-	if !status {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	// user, status := utils.ExtractClaims(c)
+	// if !status {
+	// 	return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	// }
+
+	userId := c.Param("user_id")
+	if userId == "" {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
 	}
 	userPaperId := c.Param("user_paper_id")
 	if userPaperId == "" {
@@ -201,7 +206,7 @@ func ArtuSummaController(c echo.Context) error {
 	db := config.GetConnection()
 
 	userPaperDB := models.UserPaper{}
-	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", userPaperId, user.Id).First(&userPaperDB)
+	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", userPaperId, userId).First(&userPaperDB)
 	if resultDB.RowsAffected == 0 {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
 	}
