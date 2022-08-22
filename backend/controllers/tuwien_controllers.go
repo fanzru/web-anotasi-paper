@@ -316,27 +316,44 @@ func UserLongsumSubmitController(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper already submited!", http.StatusBadRequest))
 	}
 	// longsumm summary process
+	// artuSummarySavedDB := []models.ArtuSummaDataPaper{}
+	// for _, summary := range request.LongsummSummary.Summaries {
+	// 	if summary.Method == "lmjm" {
+	// 		for i, zonesSumarry := range summary.ZonesSummary {
+	// 			for j, sent := range zonesSumarry.CategorySummary {
+	// 				artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+	// 					UserPaperID:    request.UserPaperID,
+	// 					UserId:         user.Id,
+	// 					PaperName:      userPaperDB.PaperName,
+	// 					SectionName:    "",
+	// 					ParId:          int64(i),
+	// 					SentId:         fmt.Sprintf("sent_%d_%d", i, j),
+	// 					Sent:           sent,
+	// 					AutomaticLabel: zonesSumarry.Category,
+	// 					ManualLabel:    "",
+	// 					Checked:        false,
+	// 				})
+	// 			}
+	// 		}
+	// 	}
+	// }
 	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
-	for _, summary := range request.LongsummSummary.Summaries {
-		if summary.Method == "lmjm" {
-			for i, zonesSumarry := range summary.ZonesSummary {
-				for j, sent := range zonesSumarry.CategorySummary {
-					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
-						UserPaperID:    request.UserPaperID,
-						UserId:         user.Id,
-						PaperName:      userPaperDB.PaperName,
-						SectionName:    "",
-						ParId:          int64(i),
-						SentId:         fmt.Sprintf("sent_%d_%d", i, j),
-						Sent:           sent,
-						AutomaticLabel: zonesSumarry.Category,
-						ManualLabel:    "",
-						Checked:        false,
-					})
-				}
-			}
-		}
+	for _, v := range request.LongsummSummary {
+		artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+			UserPaperID:        v.UserPaperID,
+			UserId:             user.Id,
+			PaperName:          v.PaperName,
+			SectionName:        v.SectionName,
+			ParId:              v.ParId,
+			SentId:             v.SentId,
+			AutomaticLabel:     v.AutomaticLabel,
+			ManualLabel:        v.ManualLabel,
+			Checked:            v.Checked,
+			CorrectSectionHead: v.CorrectSectionHead,
+			Sent:               v.Sent,
+		})
 	}
+
 	modelsUserSummaryDB := []models.ArtuAzDataPaper{}
 	for _, v := range request.UserSummary {
 		modelsUserSummaryDB = append(modelsUserSummaryDB, models.ArtuAzDataPaper{
