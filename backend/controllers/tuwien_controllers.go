@@ -13,6 +13,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	s3 "backend/utils/s3"
@@ -189,25 +190,38 @@ func SavedArtuAzController(c echo.Context) error {
 }
 
 func ArtuSummaController(c echo.Context) error {
-	user, status := utils.ExtractClaims(c)
-	if !status {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	// user, status := utils.ExtractClaims(c)
+	// if !status {
+	// 	return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
+	// }
+
+	userId := c.Param("user_id")
+	if userId == "" {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_id in param!", http.StatusBadRequest))
 	}
 	userPaperId := c.Param("user_paper_id")
 	if userPaperId == "" {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id in param!", http.StatusBadRequest))
 	}
 
+	userIdInt, err := strconv.Atoi(userId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_id with integer!", http.StatusBadRequest))
+	}
+	userPaperIdInt, err := strconv.Atoi(userPaperId)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("please fill user_paper_id with integer!", http.StatusBadRequest))
+	}
 	db := config.GetConnection()
 
 	userPaperDB := models.UserPaper{}
-	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", userPaperId, user.Id).First(&userPaperDB)
+	resultDB := db.Table("user_papers").Where("id = ? AND user_id = ?", userPaperId, userId).First(&userPaperDB)
 	if resultDB.RowsAffected == 0 {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
 	}
 	srcFile := userPaperDB.LinkPdf
 
-	err := utils.DownloadFile("temporary.pdf", srcFile)
+	err = utils.DownloadFile("temporary.pdf", srcFile)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("PDF file s3 error!", http.StatusInternalServerError))
@@ -255,8 +269,28 @@ func ArtuSummaController(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Unmarshal error", http.StatusInternalServerError))
 	}
-
-	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", responseResult))
+	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
+	for _, summary := range responseResult.Summaries {
+		if summary.Method == "lmjm" {
+			for i, zonesSumarry := range summary.ZonesSummary {
+				for j, sent := range zonesSumarry.CategorySummary {
+					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+						UserPaperID:    int64(userPaperIdInt),
+						UserId:         int64(userIdInt),
+						PaperName:      userPaperDB.PaperName,
+						SectionName:    "",
+						ParId:          int64(i),
+						SentId:         fmt.Sprintf("sent_%d_%d", i, j),
+						Sent:           sent,
+						AutomaticLabel: zonesSumarry.Category,
+						ManualLabel:    zonesSumarry.Category,
+						Checked:        false,
+					})
+				}
+			}
+		}
+	}
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", artuSummarySavedDB))
 }
 
 func UserLongsumSubmitController(c echo.Context) error {
@@ -264,10 +298,11 @@ func UserLongsumSubmitController(c echo.Context) error {
 	if !status {
 		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Token invalid!", http.StatusInternalServerError))
 	}
+
 	request := &models.UserLongSummarySubmitRequest{}
 	err := c.Bind(request)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, utils.ResponseError("FormFile error", http.StatusInternalServerError))
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind error", http.StatusInternalServerError))
 	}
 
 	db := config.GetConnection()
@@ -277,32 +312,48 @@ func UserLongsumSubmitController(c echo.Context) error {
 	if resultDB.RowsAffected == 0 {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper not found!", http.StatusBadRequest))
 	}
-
 	if userPaperDB.IsDone {
 		return c.JSON(http.StatusBadRequest, utils.ResponseError("paper already submited!", http.StatusBadRequest))
 	}
 	// longsumm summary process
+	// artuSummarySavedDB := []models.ArtuSummaDataPaper{}
+	// for _, summary := range request.LongsummSummary.Summaries {
+	// 	if summary.Method == "lmjm" {
+	// 		for i, zonesSumarry := range summary.ZonesSummary {
+	// 			for j, sent := range zonesSumarry.CategorySummary {
+	// 				artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+	// 					UserPaperID:    request.UserPaperID,
+	// 					UserId:         user.Id,
+	// 					PaperName:      userPaperDB.PaperName,
+	// 					SectionName:    "",
+	// 					ParId:          int64(i),
+	// 					SentId:         fmt.Sprintf("sent_%d_%d", i, j),
+	// 					Sent:           sent,
+	// 					AutomaticLabel: zonesSumarry.Category,
+	// 					ManualLabel:    "",
+	// 					Checked:        false,
+	// 				})
+	// 			}
+	// 		}
+	// 	}
+	// }
 	artuSummarySavedDB := []models.ArtuSummaDataPaper{}
-	for _, summary := range request.LongsummSummary.Summaries {
-		if summary.Method == "lmjm" {
-			for i, zonesSumarry := range summary.ZonesSummary {
-				for j, sent := range zonesSumarry.CategorySummary {
-					artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
-						UserPaperID:    request.UserPaperID,
-						UserId:         user.Id,
-						PaperName:      userPaperDB.PaperName,
-						SectionName:    "",
-						ParId:          int64(i),
-						SentId:         fmt.Sprintf("sent_%d_%d", i, j),
-						Sent:           sent,
-						AutomaticLabel: zonesSumarry.Category,
-						ManualLabel:    "",
-						Checked:        false,
-					})
-				}
-			}
-		}
+	for _, v := range request.LongsummSummary {
+		artuSummarySavedDB = append(artuSummarySavedDB, models.ArtuSummaDataPaper{
+			UserPaperID:        v.UserPaperID,
+			UserId:             user.Id,
+			PaperName:          v.PaperName,
+			SectionName:        v.SectionName,
+			ParId:              v.ParId,
+			SentId:             v.SentId,
+			AutomaticLabel:     v.AutomaticLabel,
+			ManualLabel:        v.ManualLabel,
+			Checked:            v.Checked,
+			CorrectSectionHead: v.CorrectSectionHead,
+			Sent:               v.Sent,
+		})
 	}
+
 	modelsUserSummaryDB := []models.ArtuAzDataPaper{}
 	for _, v := range request.UserSummary {
 		modelsUserSummaryDB = append(modelsUserSummaryDB, models.ArtuAzDataPaper{
@@ -319,7 +370,7 @@ func UserLongsumSubmitController(c echo.Context) error {
 			Sent:               v.Sent,
 		})
 	}
-	// todo : saved to db
+
 	db.Table("artu_summa_data_papers").CreateInBatches(artuSummarySavedDB, 100)
 	db.Table("artu_az_data_papers").CreateInBatches(modelsUserSummaryDB, 100)
 	db.Table("user_papers").Where("id = ? AND is_done = ?", request.UserPaperID, false).Updates(map[string]interface{}{
