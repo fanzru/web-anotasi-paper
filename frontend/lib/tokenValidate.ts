@@ -1,9 +1,7 @@
-import Cookies from 'universal-cookie';
 import { axiosInstance } from './axios';
 
 export const isTokenValid = async () => {
-  const cookie = new Cookies();
-  const authToken = cookie.get('token');
+  const authToken = localStorage.getItem('token');
 
   const result = await axiosInstance.get('/api/user/', {
     headers: { Authorization: `Bearer ${authToken}` },

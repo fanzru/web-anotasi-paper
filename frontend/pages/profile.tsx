@@ -9,15 +9,13 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
 
 const Profile = () => {
   const paperValue = useSelector(selectPaperValue);
   const [dataUser, setDataUser] = useState<Profile>();
   const backPath =
     Object.keys(paperValue).length === 0 ? '/anotation' : '/paper-anotation';
-  const cookie = new Cookies();
-  const token = cookie.get('token');
+  const token = localStorage.getItem('token');
 
   const getProfil = () => {
     axiosInstance

@@ -16,7 +16,6 @@ import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
 
 const Compare = () => {
   const { register, handleSubmit } = useForm();
@@ -24,8 +23,7 @@ const Compare = () => {
   const [random, setRandom] = useState<number>(0);
   const userSumValue: dataExport[] = useSelector(selectUserSumValue);
   const longSumValue: dataExport[] = useSelector(selectLongSumValue);
-  const cookie = new Cookies();
-  const authToken = cookie.get('token');
+  const authToken = localStorage.getItem('token');
   const dispatch = useDispatch();
 
   const onSubmit = handleSubmit(async (data) => {

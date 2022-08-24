@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
+// import Cookies from 'universal-cookie';
 import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { exportData } from '@/lib/exportData';
@@ -10,7 +10,7 @@ import { toExportData } from '@/lib/toExportData';
 
 const Navbar = () => {
   const router = useRouter();
-  const cookie = new Cookies();
+  // const cookie = new Cookies();
   const paperValue = useSelector(selectPaperValue);
   const Sections =
     paperValue &&
@@ -19,7 +19,8 @@ const Navbar = () => {
     );
 
   const Logout = async () => {
-    cookie.remove('token');
+    // cookie.remove('token');
+    localStorage.removeItem('token')
     toast.success('Berhasil Logout!');
     router.push('/login');
   };

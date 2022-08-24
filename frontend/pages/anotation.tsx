@@ -10,7 +10,6 @@ import Card from '../components/Card';
 import { SpecialZoomLevel, Viewer } from '@react-pdf-viewer/core';
 import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
 import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-import Cookies from 'universal-cookie';
 import { changePdfData, selectPdfValue } from '@/redux/pdfSlice';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
@@ -24,8 +23,7 @@ type Annotaion = {
 
 const Annotation = () => {
   const router = useRouter();
-  const cookie = new Cookies();
-  const token = cookie.get('token');
+  const token = localStorage.getItem('token');
   const dispatch = useDispatch();
   const [file, setFile] = useState<File>();
   const fileTypes = ['CSV', 'PDF'];
