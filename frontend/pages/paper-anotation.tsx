@@ -1,7 +1,6 @@
 import type { NextPage } from 'next';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Cookies from 'universal-cookie';
 
 import { Tag } from '@/data/tag';
 import Card from '@/components/Card';
@@ -46,12 +45,11 @@ type UserTag = {
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState<number>(0);
   const router = useRouter();
-  const cookie = new Cookies();
-  const authToken = cookie.get('token');
+  const authToken = localStorage.getItem('token');
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const dispatch = useDispatch();
   const paperValue = useSelector(selectPaperValue);
-  
+
   const pdfValue = useSelector(selectPdfValue);
   const [dataUser, setDataUser] = useState<Profile>();
 
@@ -82,7 +80,7 @@ const PaperAnotation: NextPage = () => {
   const onSubmit = handleSubmit(async (data) => {
     const Data: dataExport[] = toExportData(Sections, paperValue);
     const tag: UserTag[] = [];
-    
+
     data.section_name.map((section: SelectedSentenceResult) => {
       section.selected_sentences.map((sentences: SentencesResult) => {
         sentences.sentences.map((sentence: string) => {
@@ -102,7 +100,7 @@ const PaperAnotation: NextPage = () => {
 
     if (data.withLongsum) {
       dispatch(changeUserSummValue(Data));
-      
+
       const res = await toast.promise(
         axiosInstance.post(
           `/api/tuwien/artu-summarize/${Data[0].user_paper_id}/${dataUser?.id}`
@@ -115,7 +113,7 @@ const PaperAnotation: NextPage = () => {
       );
 
       if (res.data.status) {
-        dispatch(changeLongSumValue(res.data.value))
+        dispatch(changeLongSumValue(res.data.value));
         router.push('/paper-compare');
       }
     } else {

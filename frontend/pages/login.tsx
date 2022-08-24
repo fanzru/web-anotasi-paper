@@ -1,11 +1,10 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import Cookies from 'universal-cookie';
 import { axiosInstance } from '../lib/axios';
 import { isTokenValid } from '../lib/tokenValidate';
+import { useRouter } from 'next/router';
 
 type Login = {
   name: string;
@@ -15,8 +14,6 @@ type Login = {
 
 const Login = () => {
   const router = useRouter();
-  const cookie = new Cookies();
-  const authToken = cookie.get('token');
 
   const {
     register,
@@ -39,7 +36,10 @@ const Login = () => {
       );
 
       if (auth?.data.status) {
-        cookie.set('token', auth.data.value);
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('token', auth.data.value);
+        }
+        // cookie.set('token', auth.data.value);
         router.push('/anotation');
       }
     } catch (e) {
@@ -47,13 +47,16 @@ const Login = () => {
     }
   });
 
-  // useEffect(() => {
-  //   const checkValidate = async () => {
-  //     if (!authToken) return router.push('/login');
-  //     if (await isTokenValid()) return router.push('/paper-anotation');
-  //   };
-  //   checkValidate();
-  // }, []);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const authToken = localStorage.getItem('token');
+      const checkValidate = async () => {
+        if (!authToken) return router.push('/login');
+        if (await isTokenValid()) return router.push('/paper-anotation');
+      };
+      checkValidate();
+    }
+  }, []);
 
   return (
     <div className='h-screen flex items-center justify-center'>
