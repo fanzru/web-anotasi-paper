@@ -15,8 +15,9 @@ const Profile = () => {
   const [dataUser, setDataUser] = useState<Profile>();
   const backPath =
     Object.keys(paperValue).length === 0 ? '/anotation' : '/paper-anotation';
-  const token = localStorage.getItem('token');
-
+  if (typeof window !== 'undefined') {
+    var token = localStorage.getItem('token');
+  }
   const getProfil = () => {
     axiosInstance
       .get('/api/user/', {

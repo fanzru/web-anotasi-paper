@@ -23,13 +23,14 @@ type Annotaion = {
 
 const Annotation = () => {
   const router = useRouter();
-  const token = localStorage.getItem('token');
   const dispatch = useDispatch();
   const [file, setFile] = useState<File>();
   const fileTypes = ['CSV', 'PDF'];
   const [isSetFile, SetIsSetFile] = useState(false);
   const pdfValue = useSelector(selectPdfValue);
-
+  if (typeof window !== 'undefined') {
+    var token = localStorage.getItem('token');
+  }
   const {
     register,
     handleSubmit,
