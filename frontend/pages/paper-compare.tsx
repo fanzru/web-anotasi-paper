@@ -23,9 +23,10 @@ const Compare = () => {
   const [random, setRandom] = useState<number>(0);
   const userSumValue: dataExport[] = useSelector(selectUserSumValue);
   const longSumValue: dataExport[] = useSelector(selectLongSumValue);
-  const authToken = localStorage.getItem('token');
   const dispatch = useDispatch();
-
+  if (typeof window !== 'undefined') {
+    var authToken = localStorage.getItem('token');
+  }
   const onSubmit = handleSubmit(async (data) => {
     try {
       const ReqBody = {

@@ -45,14 +45,15 @@ type UserTag = {
 const PaperAnotation: NextPage = () => {
   const [numberSection, setNumberSection] = useState<number>(0);
   const router = useRouter();
-  const authToken = localStorage.getItem('token');
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
   const dispatch = useDispatch();
   const paperValue = useSelector(selectPaperValue);
 
   const pdfValue = useSelector(selectPdfValue);
   const [dataUser, setDataUser] = useState<Profile>();
-
+  if (typeof window !== 'undefined') {
+    var authToken = localStorage.getItem('token');
+  }
   const Sections =
     paperValue &&
     paperValue.sections?.filter(
