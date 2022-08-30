@@ -43,17 +43,21 @@ type UserTag = {
 };
 
 const PaperAnotation: NextPage = () => {
-  const [numberSection, setNumberSection] = useState<number>(0);
+  const methods = useForm();
   const router = useRouter();
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const dispatch = useDispatch();
   const paperValue = useSelector(selectPaperValue);
-
   const pdfValue = useSelector(selectPdfValue);
+  const dispatch = useDispatch();
+
+  const { handleSubmit, getValues } = methods;
   const [dataUser, setDataUser] = useState<Profile>();
+  const [numberSection, setNumberSection] = useState<number>(0);
+
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
   if (typeof window !== 'undefined') {
     var authToken = localStorage.getItem('token');
   }
+
   const Sections =
     paperValue &&
     paperValue.sections?.filter(
@@ -75,8 +79,30 @@ const PaperAnotation: NextPage = () => {
       });
   };
 
-  const methods = useForm();
-  const { handleSubmit } = methods;
+  const setUserSummaryTemp = () => {
+    const formValues = getValues();
+    const Data: dataExport[] = toExportData(Sections, paperValue);
+    const tag: UserTag[] = [];
+
+    formValues.section_name.map((section: SelectedSentenceResult) => {
+      section.selected_sentences.map((sentences: SentencesResult) => {
+        sentences.sentences.map((sentence: string) => {
+          tag.push({
+            tag: sentence,
+            wrongextracted: section.wrongextracted,
+          });
+        });
+      });
+    });
+
+    tag.map((data, index) => {
+      Data[index].manual_label = data.tag;
+      Data[index].checked = Data[index].automatic_label !== data.tag;
+      Data[index].correct_section_head = !data.wrongextracted;
+    });
+
+    dispatch(changeUserSummValue(Data));
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     const Data: dataExport[] = toExportData(Sections, paperValue);
@@ -312,11 +338,14 @@ const PaperAnotation: NextPage = () => {
                     <div className='flex flex-row justify-between items-center'>
                       <input
                         type='button'
-                        value='Previous Section'
+                        value={'Previous Section'}
                         className={`btn ${
                           numberSection == 0 ? 'btn-disabled' : ''
                         }`}
-                        onClick={() => setNumberSection(numberSection - 1)}
+                        onClick={() => {
+                          setNumberSection(numberSection - 1);
+                          setUserSummaryTemp();
+                        }}
                       />
                       <span>
                         {numberSection + 1} / {Sections?.length}
@@ -328,13 +357,16 @@ const PaperAnotation: NextPage = () => {
                       ) : (
                         <input
                           type='button'
-                          value='Next Section'
+                          value={'Next Section'}
                           className={`btn ${
                             numberSection == Sections?.length - 1
                               ? 'btn-disabled'
                               : ''
                           }`}
-                          onClick={() => setNumberSection(numberSection + 1)}
+                          onClick={() => {
+                            setNumberSection(numberSection + 1);
+                            setUserSummaryTemp();
+                          }}
                         />
                       )}
                     </div>

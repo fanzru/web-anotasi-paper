@@ -7,11 +7,13 @@ import { selectPaperValue } from '@/redux/paperSlice';
 import { exportData } from '@/lib/exportData';
 import { dataExport } from '@/types/paper';
 import { toExportData } from '@/lib/toExportData';
+import { selectUserSumValue } from '@/redux/userSummarizeSlice';
 
 const Navbar = () => {
   const router = useRouter();
   // const cookie = new Cookies();
   const paperValue = useSelector(selectPaperValue);
+  const userSumValue: dataExport[] = useSelector(selectUserSumValue);
   const Sections =
     paperValue &&
     paperValue.sections?.filter(
@@ -20,16 +22,16 @@ const Navbar = () => {
 
   const Logout = async () => {
     // cookie.remove('token');
-    localStorage.removeItem('token')
+    localStorage.removeItem('token');
     toast.success('Berhasil Logout!');
     router.push('/login');
   };
 
   const handleExport = () => {
-    const Data: dataExport[] = toExportData(Sections, paperValue);
+    // const Data: dataExport[] = toExportData(Sections, paperValue);
 
     // console.log(paperValue);
-    exportData(Data, 'Tes');
+    exportData(userSumValue, paperValue.paper_name);
   };
 
   return (
