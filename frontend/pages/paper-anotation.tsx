@@ -5,7 +5,13 @@ import { useRouter } from 'next/router';
 import { Tag } from '@/data/tag';
 import Card from '@/components/Card';
 import Radio from '@/components/Radio';
-import { dataExport, selectedSentence } from '@/types/paper';
+import {
+  dataExport,
+  selectedSentence,
+  SelectedSentenceResult,
+  SentencesResult,
+  UserTag,
+} from '@/types/paper';
 import Layout from '@/components/Layout';
 import Sentence from '@/components/Sentence';
 import { isTokenValid } from '@/lib/tokenValidate';
@@ -27,20 +33,6 @@ import { changeUserSummValue } from '@/redux/userSummarizeSlice';
 import { Profile } from '@/types/profil';
 import { toast } from 'react-toastify';
 import { changeLongSumValue } from '@/redux/longSummarizeSlice';
-
-type SentencesResult = {
-  sentences: string[];
-};
-
-type SelectedSentenceResult = {
-  selected_sentences: SentencesResult[];
-  wrongextracted: boolean;
-};
-
-type UserTag = {
-  tag: string;
-  wrongextracted: boolean;
-};
 
 const PaperAnotation: NextPage = () => {
   const methods = useForm();

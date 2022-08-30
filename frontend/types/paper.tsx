@@ -53,3 +53,18 @@ export type LongSummariesProps = {
   doc_id: string;
   summaries: LongSummaryProps[];
 };
+
+// UserTag
+export type SentencesResult = {
+  sentences: string[];
+};
+
+export type SelectedSentenceResult = {
+  selected_sentences: SentencesResult[];
+  wrongextracted: boolean;
+};
+
+export type UserTag = {
+  tag: string;
+  wrongextracted: boolean;
+};
