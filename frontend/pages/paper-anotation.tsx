@@ -41,7 +41,7 @@ const PaperAnotation: NextPage = () => {
   const pdfValue = useSelector(selectPdfValue);
   const dispatch = useDispatch();
 
-  const { handleSubmit, getValues } = methods;
+  const { handleSubmit, getValues, setValue } = methods;
   const [dataUser, setDataUser] = useState<Profile>();
   const [numberSection, setNumberSection] = useState<number>(0);
 
@@ -119,7 +119,6 @@ const PaperAnotation: NextPage = () => {
 
     if (data.withLongsum) {
       dispatch(changeUserSummValue(Data));
-
       const res = await toast.promise(
         axiosInstance.post(
           `/api/tuwien/artu-summarize/${Data[0].user_paper_id}/${dataUser?.id}`
@@ -130,7 +129,6 @@ const PaperAnotation: NextPage = () => {
           error: 'Upload Failed!',
         }
       );
-
       if (res.data.status) {
         dispatch(changeLongSumValue(res.data.value));
         router.push('/paper-compare');
@@ -139,13 +137,11 @@ const PaperAnotation: NextPage = () => {
       const config = {
         headers: { Authorization: `Bearer ${authToken}` },
       };
-
       const result = await axiosInstance.post(
         '/api/tuwien/artu-az/saved',
         Data,
         config
       );
-
       if (result.data.status) {
         exportData(Data, Data[0].paper_name);
         router.push('/artu-az-end');
@@ -311,20 +307,6 @@ const PaperAnotation: NextPage = () => {
                     value={numberSection + 1}
                     max={Sections?.length}
                   />
-                  {numberSection == Sections?.length - 1 && (
-                    <div className='form-control py-1 items-end'>
-                      <label className='cursor-pointer label'>
-                        <span className='label-text mr-3'>
-                          Summary evaluation
-                        </span>
-                        <input
-                          type='checkbox'
-                          className='checkbox checkbox-accent'
-                          {...methods.register('withLongsum')}
-                        />
-                      </label>
-                    </div>
-                  )}
 
                   <div className='flex flex-col justify-center mb-10'>
                     <div className='flex flex-row justify-between items-center'>
@@ -343,7 +325,13 @@ const PaperAnotation: NextPage = () => {
                         {numberSection + 1} / {Sections?.length}
                       </span>
                       {numberSection == Sections?.length - 1 ? (
-                        <button className='btn btn-secondary' type='submit'>
+                        <button
+                          className='btn btn-secondary'
+                          type='submit'
+                          onClick={() => {
+                            setValue('withLongsum', false);
+                          }}
+                        >
                           submit
                         </button>
                       ) : (
@@ -362,6 +350,17 @@ const PaperAnotation: NextPage = () => {
                         />
                       )}
                     </div>
+                    {numberSection == Sections?.length - 1 && (
+                      <button
+                        className='btn btn-success mt-3'
+                        {...methods.register('withLongsum')}
+                        onClick={() => {
+                          setValue('withLongsum', true);
+                        }}
+                      >
+                        go to summary evaluation
+                      </button>
+                    )}
                   </div>
                 </form>
               </FormProvider>
