@@ -5,7 +5,13 @@ import { useRouter } from 'next/router';
 import { Tag } from '@/data/tag';
 import Card from '@/components/Card';
 import Radio from '@/components/Radio';
-import { dataExport, selectedSentence } from '@/types/paper';
+import {
+  dataExport,
+  selectedSentence,
+  SelectedSentenceResult,
+  SentencesResult,
+  UserTag,
+} from '@/types/paper';
 import Layout from '@/components/Layout';
 import Sentence from '@/components/Sentence';
 import { isTokenValid } from '@/lib/tokenValidate';
@@ -28,32 +34,22 @@ import { Profile } from '@/types/profil';
 import { toast } from 'react-toastify';
 import { changeLongSumValue } from '@/redux/longSummarizeSlice';
 
-type SentencesResult = {
-  sentences: string[];
-};
-
-type SelectedSentenceResult = {
-  selected_sentences: SentencesResult[];
-  wrongextracted: boolean;
-};
-
-type UserTag = {
-  tag: string;
-  wrongextracted: boolean;
-};
-
 const PaperAnotation: NextPage = () => {
-  const [numberSection, setNumberSection] = useState<number>(0);
+  const methods = useForm();
   const router = useRouter();
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
-  const dispatch = useDispatch();
   const paperValue = useSelector(selectPaperValue);
-
   const pdfValue = useSelector(selectPdfValue);
+  const dispatch = useDispatch();
+
+  const { handleSubmit, getValues, setValue } = methods;
   const [dataUser, setDataUser] = useState<Profile>();
+  const [numberSection, setNumberSection] = useState<number>(0);
+
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
   if (typeof window !== 'undefined') {
     var authToken = localStorage.getItem('token');
   }
+
   const Sections =
     paperValue &&
     paperValue.sections?.filter(
@@ -75,8 +71,30 @@ const PaperAnotation: NextPage = () => {
       });
   };
 
-  const methods = useForm();
-  const { handleSubmit } = methods;
+  const setUserSummaryTemp = () => {
+    const formValues = getValues();
+    const Data: dataExport[] = toExportData(Sections, paperValue);
+    const tag: UserTag[] = [];
+
+    formValues.section_name.map((section: SelectedSentenceResult) => {
+      section.selected_sentences.map((sentences: SentencesResult) => {
+        sentences.sentences.map((sentence: string) => {
+          tag.push({
+            tag: sentence,
+            wrongextracted: section.wrongextracted,
+          });
+        });
+      });
+    });
+
+    tag.map((data, index) => {
+      Data[index].manual_label = data.tag;
+      Data[index].checked = Data[index].automatic_label !== data.tag;
+      Data[index].correct_section_head = !data.wrongextracted;
+    });
+
+    dispatch(changeUserSummValue(Data));
+  };
 
   const onSubmit = handleSubmit(async (data) => {
     const Data: dataExport[] = toExportData(Sections, paperValue);
@@ -101,7 +119,6 @@ const PaperAnotation: NextPage = () => {
 
     if (data.withLongsum) {
       dispatch(changeUserSummValue(Data));
-
       const res = await toast.promise(
         axiosInstance.post(
           `/api/tuwien/artu-summarize/${Data[0].user_paper_id}/${dataUser?.id}`
@@ -112,7 +129,6 @@ const PaperAnotation: NextPage = () => {
           error: 'Upload Failed!',
         }
       );
-
       if (res.data.status) {
         dispatch(changeLongSumValue(res.data.value));
         router.push('/paper-compare');
@@ -121,13 +137,11 @@ const PaperAnotation: NextPage = () => {
       const config = {
         headers: { Authorization: `Bearer ${authToken}` },
       };
-
       const result = await axiosInstance.post(
         '/api/tuwien/artu-az/saved',
         Data,
         config
       );
-
       if (result.data.status) {
         exportData(Data, Data[0].paper_name);
         router.push('/artu-az-end');
@@ -293,51 +307,60 @@ const PaperAnotation: NextPage = () => {
                     value={numberSection + 1}
                     max={Sections?.length}
                   />
-                  {numberSection == Sections?.length - 1 && (
-                    <div className='form-control py-1 items-end'>
-                      <label className='cursor-pointer label'>
-                        <span className='label-text mr-3'>
-                          Summary evaluation
-                        </span>
-                        <input
-                          type='checkbox'
-                          className='checkbox checkbox-accent'
-                          {...methods.register('withLongsum')}
-                        />
-                      </label>
-                    </div>
-                  )}
 
                   <div className='flex flex-col justify-center mb-10'>
                     <div className='flex flex-row justify-between items-center'>
                       <input
                         type='button'
-                        value='Previous Section'
+                        value={'Previous Section'}
                         className={`btn ${
                           numberSection == 0 ? 'btn-disabled' : ''
                         }`}
-                        onClick={() => setNumberSection(numberSection - 1)}
+                        onClick={() => {
+                          setNumberSection(numberSection - 1);
+                          setUserSummaryTemp();
+                        }}
                       />
                       <span>
                         {numberSection + 1} / {Sections?.length}
                       </span>
                       {numberSection == Sections?.length - 1 ? (
-                        <button className='btn btn-secondary' type='submit'>
+                        <button
+                          className='btn btn-secondary'
+                          type='submit'
+                          onClick={() => {
+                            setValue('withLongsum', false);
+                          }}
+                        >
                           submit
                         </button>
                       ) : (
                         <input
                           type='button'
-                          value='Next Section'
+                          value={'Next Section'}
                           className={`btn ${
                             numberSection == Sections?.length - 1
                               ? 'btn-disabled'
                               : ''
                           }`}
-                          onClick={() => setNumberSection(numberSection + 1)}
+                          onClick={() => {
+                            setNumberSection(numberSection + 1);
+                            setUserSummaryTemp();
+                          }}
                         />
                       )}
                     </div>
+                    {numberSection == Sections?.length - 1 && (
+                      <button
+                        className='btn btn-success mt-3'
+                        {...methods.register('withLongsum')}
+                        onClick={() => {
+                          setValue('withLongsum', true);
+                        }}
+                      >
+                        go to summary evaluation
+                      </button>
+                    )}
                   </div>
                 </form>
               </FormProvider>

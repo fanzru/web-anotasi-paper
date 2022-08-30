@@ -1,35 +1,25 @@
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
-// import Cookies from 'universal-cookie';
 import { useSelector } from 'react-redux';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { exportData } from '@/lib/exportData';
 import { dataExport } from '@/types/paper';
-import { toExportData } from '@/lib/toExportData';
+import { selectUserSumValue } from '@/redux/userSummarizeSlice';
 
 const Navbar = () => {
   const router = useRouter();
-  // const cookie = new Cookies();
   const paperValue = useSelector(selectPaperValue);
-  const Sections =
-    paperValue &&
-    paperValue.sections?.filter(
-      (section) => section.selected_sentences.length > 0
-    );
+  const userSumValue: dataExport[] = useSelector(selectUserSumValue);
 
   const Logout = async () => {
-    // cookie.remove('token');
-    localStorage.removeItem('token')
+    localStorage.removeItem('token');
     toast.success('Berhasil Logout!');
     router.push('/login');
   };
 
   const handleExport = () => {
-    const Data: dataExport[] = toExportData(Sections, paperValue);
-
-    // console.log(paperValue);
-    exportData(Data, 'Tes');
+    exportData(userSumValue, paperValue.paper_name);
   };
 
   return (
