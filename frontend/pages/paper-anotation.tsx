@@ -329,7 +329,7 @@ const PaperAnotation: NextPage = () => {
                           className='btn btn-secondary'
                           type='submit'
                           onClick={() => {
-                            setValue('withLongsum', false);
+                            setValue('withLongsum', true);
                           }}
                         >
                           submit
@@ -350,7 +350,7 @@ const PaperAnotation: NextPage = () => {
                         />
                       )}
                     </div>
-                    {numberSection == Sections?.length - 1 && (
+                    {/* {numberSection == Sections?.length - 1 && (
                       <button
                         className='btn btn-success mt-3'
                         {...methods.register('withLongsum')}
@@ -360,7 +360,7 @@ const PaperAnotation: NextPage = () => {
                       >
                         go to summary evaluation
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </form>
               </FormProvider>
