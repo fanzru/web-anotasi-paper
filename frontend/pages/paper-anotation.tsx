@@ -211,8 +211,8 @@ const PaperAnotation: NextPage = () => {
                                 (item, index, element) => {
                                   if (index == 0) {
                                     return (
-                                      <>
-                                        <div key={index}>
+                                      <div key={index}>
+                                        <div>
                                           <Sentence data={item} colored />
                                           {element.length > 1 ? (
                                             <Sentence
@@ -239,7 +239,7 @@ const PaperAnotation: NextPage = () => {
                                           </div>
                                         </div>
                                         <div className='divider'></div>
-                                      </>
+                                      </div>
                                     );
                                   } else if (
                                     index ==
@@ -269,8 +269,8 @@ const PaperAnotation: NextPage = () => {
                                     );
                                   } else {
                                     return (
-                                      <>
-                                        <div key={index}>
+                                      <div key={index}>
+                                        <div>
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
@@ -292,7 +292,7 @@ const PaperAnotation: NextPage = () => {
                                           </div>
                                         </div>
                                         <div className='divider'></div>
-                                      </>
+                                      </div>
                                     );
                                   }
                                 }
@@ -329,7 +329,7 @@ const PaperAnotation: NextPage = () => {
                           className='btn btn-secondary'
                           type='submit'
                           onClick={() => {
-                            setValue('withLongsum', false);
+                            setValue('withLongsum', true);
                           }}
                         >
                           submit
@@ -350,7 +350,7 @@ const PaperAnotation: NextPage = () => {
                         />
                       )}
                     </div>
-                    {numberSection == Sections?.length - 1 && (
+                    {/* {numberSection == Sections?.length - 1 && (
                       <button
                         className='btn btn-success mt-3'
                         {...methods.register('withLongsum')}
@@ -360,7 +360,7 @@ const PaperAnotation: NextPage = () => {
                       >
                         go to summary evaluation
                       </button>
-                    )}
+                    )} */}
                   </div>
                 </form>
               </FormProvider>
