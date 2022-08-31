@@ -211,8 +211,8 @@ const PaperAnotation: NextPage = () => {
                                 (item, index, element) => {
                                   if (index == 0) {
                                     return (
-                                      <>
-                                        <div key={index}>
+                                      <div key={index}>
+                                        <div>
                                           <Sentence data={item} colored />
                                           {element.length > 1 ? (
                                             <Sentence
@@ -239,7 +239,7 @@ const PaperAnotation: NextPage = () => {
                                           </div>
                                         </div>
                                         <div className='divider'></div>
-                                      </>
+                                      </div>
                                     );
                                   } else if (
                                     index ==
@@ -269,8 +269,8 @@ const PaperAnotation: NextPage = () => {
                                     );
                                   } else {
                                     return (
-                                      <>
-                                        <div key={index}>
+                                      <div key={index}>
+                                        <div>
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
@@ -292,7 +292,7 @@ const PaperAnotation: NextPage = () => {
                                           </div>
                                         </div>
                                         <div className='divider'></div>
-                                      </>
+                                      </div>
                                     );
                                   }
                                 }

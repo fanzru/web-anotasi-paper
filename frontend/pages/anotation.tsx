@@ -53,26 +53,28 @@ const Annotation = () => {
       bodyFormData.append('paper_name', removeSpace(data.paperName));
       bodyFormData.append('pdf_article', file!);
 
-      const res = await toast.promise(
-        axios({
-          method: 'POST',
-          url: 'https://riset.fanzru.dev/api/tuwien/artu-az',
-          data: bodyFormData,
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        {
-          pending: 'Loading..',
-          success: 'Upload Success!',
-          error: 'Upload Failed!',
-        }
-      );
+      const newPromise = axios({
+        method: 'POST',
+        url: 'https://riset.fanzru.dev/api/tuwien/artu-az',
+        data: bodyFormData,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const res = await toast.promise(newPromise, {
+        pending: 'Loading..',
+        success: 'Upload Success!',
+        error: 'Upload Failed!',
+      });
 
       if (res.data.status) {
         dispatch(changePaperValue(res.data.value));
         router.push('/paper-anotation');
       }
-    } catch (e) {
-      console.log(e);
+    } catch (err: any) {
+      console.log(err);
+      if (err.response.data.message === 'Unmarshal error') {
+        toast.error('Parsing Paper Error!');
+      }
     }
   });
 
