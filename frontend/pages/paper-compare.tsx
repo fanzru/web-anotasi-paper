@@ -170,12 +170,7 @@ const Compare = () => {
                       <ul className='list-disc px-2 ml-3'>
                         {Dummy[1].value.map((DataSum) => {
                           if (section === DataSum.manual_label)
-                            return (
-                              <li>
-                                {DataSum.sent}
-                                {Dummy[1].type}
-                              </li>
-                            );
+                            return <li>{DataSum.sent}</li>;
                         })}
                       </ul>
                     </div>
