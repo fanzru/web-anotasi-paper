@@ -3,14 +3,17 @@ import Layout from '@/components/Layout';
 import { axiosInstance } from '@/lib/axios';
 import { exportData } from '@/lib/exportData';
 import { removeStrip } from '@/lib/removeSpace';
+import { isTokenValid } from '@/lib/tokenValidate';
 import { selectPaperValue } from '@/redux/paperSlice';
 import { PaperProfile, Profile } from '@/types/profil';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
 const Profile = () => {
+  const router = useRouter();
   const paperValue = useSelector(selectPaperValue);
   const [dataUser, setDataUser] = useState<Profile>();
   const backPath =
@@ -74,6 +77,11 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    const Check = async () => {
+      const user = await isTokenValid();
+      if (!user) return router.push('/login');
+    };
+    Check();
     getProfil();
   }, []);
 

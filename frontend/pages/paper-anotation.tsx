@@ -151,10 +151,10 @@ const PaperAnotation: NextPage = () => {
 
   const Check = async () => {
     if (Object.keys(paperValue).length === 0) return router.push('/anotation');
-    if (!authToken) return router.push('/login');
-    if (await isTokenValid()) return router.push('/paper-anotation');
+    const user = await isTokenValid();
+    if (!user) return router.push('/login');
   };
-
+  
   useEffect(() => {
     getProfil();
     Check();

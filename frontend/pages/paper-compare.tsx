@@ -2,6 +2,7 @@ import Card from '@/components/Card';
 import CardCollapse from '@/components/CardCollapse';
 import Layout from '@/components/Layout';
 import { axiosInstance } from '@/lib/axios';
+import { isTokenValid } from '@/lib/tokenValidate';
 import {
   changeLongSumValue,
   selectLongSumValue,
@@ -98,6 +99,11 @@ const Compare = () => {
   ];
 
   useEffect(() => {
+    const Check = async () => {
+      const user = await isTokenValid();
+      if (!user) return router.push('/login');
+    };
+    Check();
     setRandom(Math.random() >= 0.5 ? 1 : 0);
   }, []);
 
@@ -170,12 +176,7 @@ const Compare = () => {
                       <ul className='list-disc px-2 ml-3'>
                         {Dummy[1].value.map((DataSum) => {
                           if (section === DataSum.manual_label)
-                            return (
-                              <li>
-                                {DataSum.sent}
-                                {Dummy[1].type}
-                              </li>
-                            );
+                            return <li>{DataSum.sent}</li>;
                         })}
                       </ul>
                     </div>

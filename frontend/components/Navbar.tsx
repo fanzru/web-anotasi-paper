@@ -25,7 +25,7 @@ const Navbar = () => {
   return (
     <div className='navbar bg-base-300 px-5 fixed top-0 z-50'>
       <div className='flex-1'>
-        <a className='btn btn-ghost normal-case text-lg'>Anotation Paper</a>
+        <a className='btn btn-ghost normal-case text-lg'>Paper Annotasi</a>
       </div>
       <div className='flex-none gap-4'>
         {router.pathname === '/paper-anotation' && (

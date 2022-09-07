@@ -1,6 +1,6 @@
 import Layout from '../components/Layout';
 import DataArticle from '../data/article';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileUploader } from 'react-drag-drop-files';
 import { changePaperValue } from '../redux/paperSlice';
 import axios from 'axios';
@@ -14,6 +14,7 @@ import { changePdfData, selectPdfValue } from '@/redux/pdfSlice';
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import { removeSpace } from '@/lib/removeSpace';
+import { isTokenValid } from '@/lib/tokenValidate';
 
 type Annotaion = {
   articleInfo: string;
@@ -77,6 +78,14 @@ const Annotation = () => {
       }
     }
   });
+
+  useEffect(() => {
+    const Check = async () => {
+      const user = await isTokenValid();
+      if (!user) return router.push('/login');
+    };
+    Check();
+  }, []);
 
   return (
     <>

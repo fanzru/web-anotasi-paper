@@ -1,8 +1,20 @@
 import Layout from '@/components/Layout';
+import { isTokenValid } from '@/lib/tokenValidate';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 const EndSection = () => {
+  const router = useRouter();
+
+  useEffect(() => {
+    const Check = async () => {
+      const user = await isTokenValid();
+      if (!user) return router.push('/login');
+    };
+    Check();
+  }, []);
   return (
     <Layout>
       <div className='flex flex-col items-center justify-center h-screen w-full'>
