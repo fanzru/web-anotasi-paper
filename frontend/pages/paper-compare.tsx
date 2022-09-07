@@ -2,6 +2,7 @@ import Card from '@/components/Card';
 import CardCollapse from '@/components/CardCollapse';
 import Layout from '@/components/Layout';
 import { axiosInstance } from '@/lib/axios';
+import { isTokenValid } from '@/lib/tokenValidate';
 import {
   changeLongSumValue,
   selectLongSumValue,
@@ -98,6 +99,11 @@ const Compare = () => {
   ];
 
   useEffect(() => {
+    const Check = async () => {
+      const user = await isTokenValid();
+      if (!user) return router.push('/login');
+    };
+    Check();
     setRandom(Math.random() >= 0.5 ? 1 : 0);
   }, []);
 

@@ -52,7 +52,7 @@ const Login = () => {
       const authToken = localStorage.getItem('token');
       const checkValidate = async () => {
         if (!authToken) return router.push('/login');
-        if (await isTokenValid()) return router.push('/paper-anotation');
+        if (await isTokenValid()) return router.push('/anotation');
       };
       checkValidate();
     }
