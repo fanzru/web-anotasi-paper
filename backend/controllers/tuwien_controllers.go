@@ -168,6 +168,7 @@ func SavedArtuAzController(c echo.Context) error {
 			Checked:            v.Checked,
 			CorrectSectionHead: v.CorrectSectionHead,
 			Sent:               v.Sent,
+			CorrectLabel:       v.CorrectLabel,
 		})
 	}
 
