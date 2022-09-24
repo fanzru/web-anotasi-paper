@@ -14,7 +14,7 @@ type ArtuAzDataPaper struct {
 	Checked            bool   `json:"checked" gorm:"checked"`
 	CorrectSectionHead bool   `json:"correct_section_head" gorm:"correct_section_head"`
 	Sent               string `json:"sent" gorm:"sent"`
-	CorrectLabel       string `json:"correct_label" gorm:"correct_label"`
+	CorrectLabel       bool   `json:"correct_label" gorm:"correct_label"`
 }
 
 type UserPaper struct {
