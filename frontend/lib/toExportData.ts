@@ -15,6 +15,7 @@ export const toExportData = (sections: Section[], valuePaper: dataPaper) => {
           automatic_label: sentence.tag,
           manual_label: sentence.tag,
           checked: true,
+          correct_label: false,
           sent: sentence.sent,
         });
       });

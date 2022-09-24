@@ -1,7 +1,36 @@
 import Link from 'next/link';
-import React from 'react'
+import React from 'react';
 
 const Guidelines = () => {
+  const Guides = [
+    {
+      zone: 'claim',
+      definition:
+        'Sentence describing the research goal or the hypothesis behind research work',
+      example:
+        'This paper investigates the incorporation of diverse lexical, syntactic and semantic knowledge in feature-based relation extraction using SVM (P05-1053)',
+    },
+    {
+      zone: 'method',
+      definition:
+        'Sentence describing the methodology to solve the research questions',
+      example:
+        'Regarding semantic orientations as spins of electrons, we use the mean field approximation to compute the approximate probability function of the system instead of the intractable actual probability function. (P05-1017)*',
+    },
+    {
+      zone: 'result',
+      definition: 'Sentence describing the outcomes of the experiments',
+      example:
+        'Our method produces a gain of +1.68 BLEU on NIST OpenMT04 for the phrase-based system , and a gain of +1.28 BLEU on NIST OpenMT06 for the hierarchical phrase-based system . (D14-1016)',
+    },
+    {
+      zone: 'conclusion',
+      definition:
+        'Sentence describing interpretation of results, findings or conclusions of the work',
+      example:
+        'This suggests that most of useful information in full parse trees for relation extraction is shallow and can be captured by chunking (P05-1053)',
+    },
+  ];
   return (
     <>
       <div className='space-y-2'>
@@ -36,54 +65,15 @@ const Guidelines = () => {
             </tr>
           </thead>
           <tbody>
-            <tr className='border-b'>
-              <th>claim</th>
-              <td>
-                Sentence describing the research goal or the hypothesis behind
-                research work
-              </td>
-              <td>
-                This paper investigates the incorporation of diverse lexical,
-                syntactic and semantic knowledge in feature-based relation
-                extraction using SVM (P05-1053)
-              </td>
-            </tr>
-            <tr className='border-b'>
-              <th>method</th>
-              <td>
-                Sentence describing the research goal or the hypothesis behind
-                research work
-              </td>
-              <td>
-                This paper investigates the incorporation of diverse lexical,
-                syntactic and semantic knowledge in feature-based relation
-                extraction using SVM (P05-1053)
-              </td>
-            </tr>
-            <tr className='border-b'>
-              <th>result</th>
-              <td>
-                Sentence describing the research goal or the hypothesis behind
-                research work
-              </td>
-              <td>
-                This paper investigates the incorporation of diverse lexical,
-                syntactic and semantic knowledge in feature-based relation
-                extraction using SVM (P05-1053)
-              </td>
-            </tr>
-            <tr className='border-b'>
-              <th>conclusion</th>
-              <td>
-                Sentence describing the research goal or the hypothesis behind
-                research work
-              </td>
-              <td>
-                This paper investigates the incorporation of diverse lexical,
-                syntactic and semantic knowledge in feature-based relation
-                extraction using SVM (P05-1053)
-              </td>
-            </tr>
+            {Guides.map((guide, index) => {
+              return (
+                <tr className='border-b' key={index}>
+                  <th>{guide.zone}</th>
+                  <td>{guide.definition}</td>
+                  <td>{guide.example}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -103,6 +93,6 @@ const Guidelines = () => {
       </p>
     </>
   );
-}
+};
 
-export default Guidelines
+export default Guidelines;
