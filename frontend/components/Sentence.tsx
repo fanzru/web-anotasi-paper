@@ -4,7 +4,7 @@ import { Sentence } from '../types/paper';
 
 interface Sen {
   data: Sentence;
-  colored?: Boolean
+  colored?: Boolean;
 }
 
 const Sentence: FC<Sen> = ({ data, colored }) => {
@@ -27,7 +27,10 @@ const Sentence: FC<Sen> = ({ data, colored }) => {
   }
 
   return (
-    <span className={colored ? textColor : ''}>{data.sent}</span>
+    <span>
+      <span className={colored ? textColor : ''}>{data.sent}</span>
+      <span> </span>
+    </span>
   );
 };
 

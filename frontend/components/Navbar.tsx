@@ -6,11 +6,14 @@ import { selectPaperValue } from '@/redux/paperSlice';
 import { exportData } from '@/lib/exportData';
 import { dataExport } from '@/types/paper';
 import { selectUserSumValue } from '@/redux/userSummarizeSlice';
+import clsx from 'clsx';
+import { selectProgressValue } from '@/redux/progressSlice';
 
 const Navbar = () => {
   const router = useRouter();
   const paperValue = useSelector(selectPaperValue);
   const userSumValue: dataExport[] = useSelector(selectUserSumValue);
+  const progressValue = useSelector(selectProgressValue);
 
   const Logout = async () => {
     localStorage.removeItem('token');
@@ -19,7 +22,7 @@ const Navbar = () => {
   };
 
   const handleExport = () => {
-    exportData(userSumValue, paperValue.paper_name);
+    exportData(userSumValue, 'progress_' + paperValue.paper_name);
   };
 
   return (
@@ -29,7 +32,13 @@ const Navbar = () => {
       </div>
       <div className='flex-none gap-4'>
         {router.pathname === '/paper-anotation' && (
-          <button className='btn btn-primary' onClick={handleExport}>
+          <button
+            className={clsx(
+              'btn btn-primary',
+              progressValue ? '' : 'btn-disabled'
+            )}
+            onClick={handleExport}
+          >
             Download Progress
           </button>
         )}

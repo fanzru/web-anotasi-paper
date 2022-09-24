@@ -24,6 +24,7 @@ const Compare = () => {
   const [random, setRandom] = useState<number>(0);
   const userSumValue: dataExport[] = useSelector(selectUserSumValue);
   const longSumValue: dataExport[] = useSelector(selectLongSumValue);
+
   const dispatch = useDispatch();
   if (typeof window !== 'undefined') {
     var authToken = localStorage.getItem('token');
@@ -51,9 +52,9 @@ const Compare = () => {
       );
 
       if (res.data.status) {
-        router.push('/artu-az-end');
         dispatch(changeUserSummValue([]));
         dispatch(changeLongSumValue([]));
+        router.push('/artu-az-end');
       }
     } catch (err) {
       console.log(err);

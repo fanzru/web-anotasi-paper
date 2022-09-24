@@ -35,6 +35,7 @@ export type dataExport = {
   manual_label: string;
   checked: boolean;
   correct_section_head?: boolean;
+  correct_label?: boolean;
   sent: string;
 };
 
@@ -57,6 +58,7 @@ export type LongSummariesProps = {
 // UserTag
 export type SentencesResult = {
   sentences: string[];
+  correct_label: boolean[]
 };
 
 export type SelectedSentenceResult = {
@@ -67,4 +69,5 @@ export type SelectedSentenceResult = {
 export type UserTag = {
   tag: string;
   wrongextracted: boolean;
+  correct_label: boolean;
 };

@@ -29,19 +29,30 @@ import { axiosInstance } from '@/lib/axios';
 import { exportData } from '@/lib/exportData';
 import QuickTo from '@/components/QuickTo';
 import Guidelines from '@/components/Guidelines';
-import { changeUserSummValue } from '@/redux/userSummarizeSlice';
+import {
+  changeUserSummValue,
+  selectUserSumValue,
+} from '@/redux/userSummarizeSlice';
 import { Profile } from '@/types/profil';
 import { toast } from 'react-toastify';
 import { changeLongSumValue } from '@/redux/longSummarizeSlice';
+import { changeProgressData, selectProgressValue } from '@/redux/progressSlice';
 
 const PaperAnotation: NextPage = () => {
   const methods = useForm();
   const router = useRouter();
   const paperValue = useSelector(selectPaperValue);
   const pdfValue = useSelector(selectPdfValue);
+  const userSumValue: dataExport[] = useSelector(selectUserSumValue);
+
   const dispatch = useDispatch();
 
-  const { handleSubmit, getValues, setValue } = methods;
+  const {
+    handleSubmit,
+    getValues,
+    setValue,
+    formState: { isDirty },
+  } = methods;
   const [dataUser, setDataUser] = useState<Profile>();
   const [numberSection, setNumberSection] = useState<number>(0);
 
@@ -78,10 +89,11 @@ const PaperAnotation: NextPage = () => {
 
     formValues.section_name.map((section: SelectedSentenceResult) => {
       section.selected_sentences.map((sentences: SentencesResult) => {
-        sentences.sentences.map((sentence: string) => {
+        sentences.sentences.map((sentence: string, indexSentences) => {
           tag.push({
             tag: sentence,
             wrongextracted: section.wrongextracted,
+            correct_label: sentences.correct_label[indexSentences],
           });
         });
       });
@@ -91,34 +103,17 @@ const PaperAnotation: NextPage = () => {
       Data[index].manual_label = data.tag;
       Data[index].checked = Data[index].automatic_label !== data.tag;
       Data[index].correct_section_head = !data.wrongextracted;
+      Data[index].correct_label = data.correct_label;
     });
 
     dispatch(changeUserSummValue(Data));
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    const Data: dataExport[] = toExportData(Sections, paperValue);
-    const tag: UserTag[] = [];
-
-    data.section_name.map((section: SelectedSentenceResult) => {
-      section.selected_sentences.map((sentences: SentencesResult) => {
-        sentences.sentences.map((sentence: string) => {
-          tag.push({
-            tag: sentence,
-            wrongextracted: section.wrongextracted,
-          });
-        });
-      });
-    });
-
-    Data.map((data, index) => {
-      data.manual_label = tag[index].tag;
-      data.checked = data.automatic_label !== tag[index].tag;
-      data.correct_section_head = !tag[index].wrongextracted;
-    });
+    setUserSummaryTemp();
+    const Data: dataExport[] = userSumValue;
 
     if (data.withLongsum) {
-      dispatch(changeUserSummValue(Data));
       const res = await toast.promise(
         axiosInstance.post(
           `/api/tuwien/artu-summarize/${Data[0].user_paper_id}/${dataUser?.id}`
@@ -154,11 +149,13 @@ const PaperAnotation: NextPage = () => {
     const user = await isTokenValid();
     if (!user) return router.push('/login');
   };
-  
+
   useEffect(() => {
     getProfil();
     Check();
-  }, []);
+    dispatch(changeProgressData(isDirty));
+    setUserSummaryTemp();
+  }, [isDirty]);
 
   return (
     <>
@@ -221,6 +218,18 @@ const PaperAnotation: NextPage = () => {
                                           ) : (
                                             ''
                                           )}
+                                          <div className='my-2'>
+                                            <label className='cursor-pointer flex items-center'>
+                                              <input
+                                                type='checkbox'
+                                                className='checkbox checkbox-sm mr-2'
+                                                {...methods.register(
+                                                  `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
+                                                )}
+                                              />
+                                              <p>Correct label</p>
+                                            </label>
+                                          </div>
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -249,6 +258,18 @@ const PaperAnotation: NextPage = () => {
                                       <div key={index}>
                                         <Sentence data={element[index - 1]} />
                                         <Sentence data={item} colored />
+                                        <div className='my-2'>
+                                          <label className='cursor-pointer flex items-center'>
+                                            <input
+                                              type='checkbox'
+                                              className='checkbox checkbox-sm mr-2'
+                                              {...methods.register(
+                                                `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
+                                              )}
+                                            />
+                                            <p>Correct label</p>
+                                          </label>
+                                        </div>
                                         <div className='flex flex-wrap'>
                                           {Tag.map((tag, idx) => {
                                             return (
@@ -274,6 +295,18 @@ const PaperAnotation: NextPage = () => {
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
+                                          <div className='my-2'>
+                                            <label className='cursor-pointer flex items-center'>
+                                              <input
+                                                type='checkbox'
+                                                className='checkbox checkbox-sm mr-2'
+                                                {...methods.register(
+                                                  `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
+                                                )}
+                                              />
+                                              <p>Correct label</p>
+                                            </label>
+                                          </div>
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
