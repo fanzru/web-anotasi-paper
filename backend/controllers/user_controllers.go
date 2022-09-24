@@ -96,3 +96,30 @@ func UserProfileController(c echo.Context) error {
 	profileData.ListPapers = userPaperDB
 	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", profileData))
 }
+
+func ResetPasswordController(c echo.Context) error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	db := config.GetConnection()
+
+	data := &models.UserResetPassword{}
+	if err := c.Bind(&data); err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Bind data Error!", http.StatusInternalServerError))
+	}
+	result := &models.User{}
+	err = db.Where("email = ?", data.Email).First(&result).Error
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, utils.ResponseError("Email Not Found, Please Register First!", http.StatusInternalServerError))
+	}
+
+	//hashing password
+	hash, err := bcrypt.GenerateFromPassword([]byte(data.Password), 5)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, utils.ResponseError("Error While Hashing Password!", http.StatusInternalServerError))
+	}
+
+	db.Table("users").Where("email = ?", data.Email).Update("password", string(hash))
+	return c.JSON(http.StatusOK, utils.ResponseSuccess("Success", result.Token))
+}

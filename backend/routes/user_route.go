@@ -15,6 +15,7 @@ func UserRoutes(e *echo.Echo) *echo.Echo {
 	// customMiddleware := utils.CustomeMiddleware()
 	g.POST("/register", controllers.RegisterController)
 	g.POST("/login", controllers.LoginController)
+	//g.POST("/reset-password", controllers.ResetPasswordController)
 	g.GET("/", controllers.UserProfileController)
 	return e
 }

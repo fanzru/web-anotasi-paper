@@ -14,6 +14,10 @@ type UserBodyLogin struct {
 	Token    string `json:"token"`
 }
 
+type UserResetPassword struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 type UserProfileData struct {
 	Id         int64       `json:"id"`
 	Name       string      `json:"name"`
