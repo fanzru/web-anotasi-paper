@@ -37,6 +37,7 @@ import { Profile } from '@/types/profil';
 import { toast } from 'react-toastify';
 import { changeLongSumValue } from '@/redux/longSummarizeSlice';
 import { changeProgressData } from '@/redux/progressSlice';
+import CorrectLabel from '@/components/CorrectLabel';
 
 const PaperAnotation: NextPage = () => {
   const methods = useForm();
@@ -153,8 +154,8 @@ const PaperAnotation: NextPage = () => {
   useEffect(() => {
     getProfil();
     Check();
-    dispatch(changeProgressData(isDirty));
-    setUserSummaryTemp();
+    // dispatch(changeProgressData(isDirty));
+    // setUserSummaryTemp();
   }, [isDirty]);
 
   return (
@@ -192,6 +193,17 @@ const PaperAnotation: NextPage = () => {
                 <Guidelines />
               </CardCollapse>
 
+              <Card title='Tes'>
+                <button
+                  className='btn'
+                  onClick={() => {
+                    console.log(methods.getValues());
+                  }}
+                >
+                  tes
+                </button>
+              </Card>
+
               {/* Paper Data */}
               <FormProvider {...methods}>
                 <form onSubmit={onSubmit}>
@@ -218,18 +230,9 @@ const PaperAnotation: NextPage = () => {
                                           ) : (
                                             ''
                                           )}
-                                          {/* <div className='my-2'>
-                                            <label className='cursor-pointer flex items-center'>
-                                              <input
-                                                type='checkbox'
-                                                className='checkbox checkbox-sm mr-2'
-                                                {...methods.register(
-                                                  `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
-                                                )}
-                                              />
-                                              <p>Correct label</p>
-                                            </label>
-                                          </div> */}
+                                          <CorrectLabel
+                                            dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
+                                          />
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -258,18 +261,9 @@ const PaperAnotation: NextPage = () => {
                                       <div key={index}>
                                         <Sentence data={element[index - 1]} />
                                         <Sentence data={item} colored />
-                                        <div className='my-2'>
-                                          <label className='cursor-pointer flex items-center'>
-                                            <input
-                                              type='checkbox'
-                                              className='checkbox checkbox-sm mr-2'
-                                              {...methods.register(
-                                                `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
-                                              )}
-                                            />
-                                            <p>Correct label</p>
-                                          </label>
-                                        </div>
+                                        <CorrectLabel
+                                          dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
+                                        />
                                         <div className='flex flex-wrap'>
                                           {Tag.map((tag, idx) => {
                                             return (
@@ -295,18 +289,9 @@ const PaperAnotation: NextPage = () => {
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
-                                          {/* <div className='my-2'>
-                                            <label className='cursor-pointer flex items-center'>
-                                              <input
-                                                type='checkbox'
-                                                className='checkbox checkbox-sm mr-2'
-                                                {...methods.register(
-                                                  `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
-                                                )}
-                                              />
-                                              <p>Correct label</p>
-                                            </label>
-                                          </div> */}
+                                          <CorrectLabel
+                                            dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
+                                          />
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -351,7 +336,7 @@ const PaperAnotation: NextPage = () => {
                         }`}
                         onClick={() => {
                           setNumberSection(numberSection - 1);
-                          setUserSummaryTemp();
+                          // setUserSummaryTemp();
                         }}
                       />
                       <span>
@@ -378,7 +363,7 @@ const PaperAnotation: NextPage = () => {
                           }`}
                           onClick={() => {
                             setNumberSection(numberSection + 1);
-                            setUserSummaryTemp();
+                            // setUserSummaryTemp();
                           }}
                         />
                       )}
