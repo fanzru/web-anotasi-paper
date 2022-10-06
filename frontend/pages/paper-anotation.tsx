@@ -36,7 +36,7 @@ import {
 import { Profile } from '@/types/profil';
 import { toast } from 'react-toastify';
 import { changeLongSumValue } from '@/redux/longSummarizeSlice';
-import { changeProgressData, selectProgressValue } from '@/redux/progressSlice';
+import { changeProgressData } from '@/redux/progressSlice';
 
 const PaperAnotation: NextPage = () => {
   const methods = useForm();
@@ -218,7 +218,7 @@ const PaperAnotation: NextPage = () => {
                                           ) : (
                                             ''
                                           )}
-                                          <div className='my-2'>
+                                          {/* <div className='my-2'>
                                             <label className='cursor-pointer flex items-center'>
                                               <input
                                                 type='checkbox'
@@ -229,7 +229,7 @@ const PaperAnotation: NextPage = () => {
                                               />
                                               <p>Correct label</p>
                                             </label>
-                                          </div>
+                                          </div> */}
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -295,7 +295,7 @@ const PaperAnotation: NextPage = () => {
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
-                                          <div className='my-2'>
+                                          {/* <div className='my-2'>
                                             <label className='cursor-pointer flex items-center'>
                                               <input
                                                 type='checkbox'
@@ -306,7 +306,7 @@ const PaperAnotation: NextPage = () => {
                                               />
                                               <p>Correct label</p>
                                             </label>
-                                          </div>
+                                          </div> */}
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
