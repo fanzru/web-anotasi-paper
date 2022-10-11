@@ -298,7 +298,6 @@ const PaperAnotation: NextPage = () => {
                                               return (
                                                 <div className=''>
                                                   <Radio
-                                                    // setValue={setValue}
                                                     data={tag}
                                                     sentence={item}
                                                     dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
