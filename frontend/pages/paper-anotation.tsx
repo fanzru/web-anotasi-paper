@@ -230,9 +230,9 @@ const PaperAnotation: NextPage = () => {
                                           ) : (
                                             ''
                                           )}
-                                          {/* <CorrectLabel
+                                          <CorrectLabel
                                             dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
-                                          /> */}
+                                          />
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -264,6 +264,7 @@ const PaperAnotation: NextPage = () => {
                                         <CorrectLabel
                                           dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
                                         />
+
                                         <div className='flex flex-wrap'>
                                           {Tag.map((tag, idx) => {
                                             return (
@@ -289,17 +290,15 @@ const PaperAnotation: NextPage = () => {
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
-                                          {/* <CorrectLabel
+                                          <CorrectLabel
                                             dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
-                                          /> */}
+                                          />
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
-                                                <div
-                                                  className='form-control'
-                                                  key={idx}
-                                                >
+                                                <div className=''>
                                                   <Radio
+                                                    // setValue={setValue}
                                                     data={tag}
                                                     sentence={item}
                                                     dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.sentences.${index}`}
