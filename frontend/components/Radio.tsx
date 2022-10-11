@@ -14,14 +14,15 @@ const Radio: FC<Radio> = ({data, sentence, dataRegister }) => {
   const methods = useFormContext();
   const {getValues}= methods;
  
+  // @DEBUGGER : Todo deleted if doni read this change wkwkwkw
   useEffect(() => {
-
     console.log("----",getValues(`${dataRegister}`))
     console.log(`${dataRegister}.tag`)
     console.log("======================================= ")
     console.log(`#data.tag     : ${data.tag}`)
     console.log(`#sentance.tag : ${sentence.tag}`)
   })
+
   return (
     <div className='form-control'>
       <label className='label cursor-pointer'>
@@ -29,7 +30,6 @@ const Radio: FC<Radio> = ({data, sentence, dataRegister }) => {
           type='radio'
           className={`radio`}
           {...methods.register(dataRegister)}
-          // onChange={handler}
           value={data.tag}
           defaultChecked={getValues(`${dataRegister}`)== undefined ? data.tag === sentence.tag : data.tag == getValues(`${dataRegister}.tag`)}
         />
