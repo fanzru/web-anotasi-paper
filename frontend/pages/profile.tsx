@@ -112,7 +112,7 @@ const Profile = () => {
                       d='M11 17l-5-5m0 0l5-5m-5 5h12'
                     />
                   </svg>
-                  <span>Kembali</span>
+                  <span>Back</span>
                 </a>
               </Link>
             </div>
@@ -137,7 +137,7 @@ const Profile = () => {
                 <thead>
                   <tr>
                     <th></th>
-                    <th>Nama Paper</th>
+                    <th>Paper Title</th>
                     <th className='text-center'>Actions</th>
                   </tr>
                 </thead>

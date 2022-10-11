@@ -156,7 +156,7 @@ const PaperAnotation: NextPage = () => {
     Check();
     // dispatch(changeProgressData(isDirty));
     // setUserSummaryTemp();
-  }, [isDirty]);
+  }, []);
 
   return (
     <>
@@ -230,9 +230,9 @@ const PaperAnotation: NextPage = () => {
                                           ) : (
                                             ''
                                           )}
-                                          <CorrectLabel
+                                          {/* <CorrectLabel
                                             dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
-                                          />
+                                          /> */}
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -289,9 +289,9 @@ const PaperAnotation: NextPage = () => {
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
-                                          <CorrectLabel
+                                          {/* <CorrectLabel
                                             dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
-                                          />
+                                          /> */}
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (

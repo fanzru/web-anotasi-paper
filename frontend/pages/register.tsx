@@ -106,7 +106,7 @@ const Register = () => {
             </div>
           </form>
           <p>
-            Sudah punya akun?{' '}
+            Already have an account?{' '}
             <Link href='/login' passHref>
               <span className='link'>Login</span>
             </Link>

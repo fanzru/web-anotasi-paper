@@ -109,7 +109,7 @@ const Login = () => {
             </div>
           </form>
           <p>
-            Belum punya akun?{' '}
+            Don't have account?{' '}
             <Link href='/register' passHref>
               <span className='link'>Register</span>
             </Link>

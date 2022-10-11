@@ -201,11 +201,11 @@ const Annotation = () => {
                     >
                       {isSetFile ? (
                         <>
-                          <p>File Berhasil Di Tambahkan</p>
+                          <p>Paper Added</p>
                           <p className='font-medium'>{file?.name}</p>
                         </>
                       ) : (
-                        <p>Upload Disini</p>
+                        <p>Upload Here</p>
                       )}
                     </button>
                   </FileUploader>

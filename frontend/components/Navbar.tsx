@@ -28,7 +28,7 @@ const Navbar = () => {
   return (
     <div className='navbar bg-base-300 px-5 fixed top-0 z-50'>
       <div className='flex-1'>
-        <a className='btn btn-ghost normal-case text-lg'>Paper Annotasi</a>
+        <a className='btn btn-ghost normal-case text-lg'>Paper Annotation</a>
       </div>
       <div className='flex-none gap-4'>
         {router.pathname === '/paper-anotation' && (
@@ -66,7 +66,7 @@ const Navbar = () => {
           >
             <li>
               <Link href={'/profile'}>
-                <a>Profil</a>
+                <a>Profile</a>
               </Link>
             </li>
             <li onClick={Logout}>
