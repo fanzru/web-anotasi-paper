@@ -1,31 +1,31 @@
 export const Tag: tagColor[] = [
   {
     tag: 'Claim',
-    color: 'warning',
+    color: 'badge-warning',
   },
   {
     tag: 'Method',
-    color: 'info',
+    color: 'badge-info',
   },
   {
     tag: 'Result',
-    color: 'primary',
+    color: 'badge-primary',
   },
   {
     tag: 'Conclusion',
-    color: 'success',
+    color: 'badge-success',
   },
   {
     tag: 'Method/Result',
-    color: 'accent',
+    color: 'badge-accent',
   },
   {
     tag: 'Other',
-    color: 'neutral',
+    color: 'badge-neutral',
   },
   {
     tag: 'Wrong extraction',
-    color: 'error',
+    color: 'badge-error',
   },
 ];
 
