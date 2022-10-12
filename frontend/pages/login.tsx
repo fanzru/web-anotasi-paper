@@ -6,7 +6,7 @@ import { axiosInstance } from '../lib/axios';
 import { isTokenValid } from '../lib/tokenValidate';
 import { useRouter } from 'next/router';
 
-type Login = {
+type LoginType = {
   name: string;
   email: string;
   password: string;
@@ -19,7 +19,7 @@ const Login = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Login>();
+  } = useForm<LoginType>();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -39,7 +39,6 @@ const Login = () => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', auth.data.value);
         }
-        // cookie.set('token', auth.data.value);
         router.push('/anotation');
       }
     } catch (e) {

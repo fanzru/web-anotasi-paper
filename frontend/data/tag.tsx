@@ -1,4 +1,4 @@
-export const Tag: tagColor[] = [
+export const Tag: TagColor[] = [
   {
     tag: 'Claim',
     color: 'badge-warning',
@@ -29,7 +29,7 @@ export const Tag: tagColor[] = [
   },
 ];
 
-export interface tagColor {
+export interface TagColor {
   tag: string;
   color: string;
 }

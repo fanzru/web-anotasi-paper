@@ -1,21 +1,15 @@
 import { FC } from 'react';
-import {
-  Field,
-  FieldValue,
-  useFormContext,
-  UseFormSetValue,
-} from 'react-hook-form';
-import { tagColor } from '../data/tag';
+import { useFormContext } from 'react-hook-form';
+import { TagColor } from '../data/tag';
 import { Sentence } from '../types/paper';
-import { useState, useEffect } from 'react';
 
-interface Radio {
-  data: tagColor;
+interface RadioInterface {
+  data: TagColor;
   sentence: Sentence;
   dataRegister: string;
 }
 
-const Radio: FC<Radio> = ({ data, sentence, dataRegister }) => {
+const Radio: FC<RadioInterface> = ({ data, sentence, dataRegister }) => {
   const methods = useFormContext();
   const { getValues } = methods;
 

@@ -48,7 +48,7 @@ const Annotation = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      var bodyFormData = new FormData();
+      let bodyFormData = new FormData();
       bodyFormData.append('article_info', data.articleInfo);
       bodyFormData.append('domain_info', data.domainInfo);
       bodyFormData.append('paper_name', removeSpace(data.paperName));

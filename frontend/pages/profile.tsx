@@ -4,7 +4,6 @@ import { axiosInstance } from '@/lib/axios';
 import { exportData } from '@/lib/exportData';
 import { removeStrip } from '@/lib/removeSpace';
 import { isTokenValid } from '@/lib/tokenValidate';
-import { selectPaperValue } from '@/redux/paperSlice';
 import { selectUserSumValue } from '@/redux/userSummarizeSlice';
 import { dataExport } from '@/types/paper';
 import { PaperProfile, Profile } from '@/types/profil';
@@ -14,11 +13,11 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 
-const Profile = () => {
+const ProfilePage = () => {
   const router = useRouter();
   const [dataUser, setDataUser] = useState<Profile>();
   const userSumValue: dataExport[] = useSelector(selectUserSumValue);
-  
+
   const backPath =
     userSumValue.length === 0 ? '/anotation' : '/paper-anotation';
 
@@ -222,4 +221,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfilePage;
