@@ -1,13 +1,12 @@
 import { FC } from 'react';
-import { Tag } from '../data/tag';
 import { Sentence } from '../types/paper';
 
-interface Sen {
+interface SentenceInterface {
   data: Sentence;
-  colored?: Boolean;
+  colored?: boolean;
 }
 
-const Sentence: FC<Sen> = ({ data, colored }) => {
+const Sentence: FC<SentenceInterface> = ({ data, colored }) => {
   let textColor;
 
   if (data.tag == 'Claim') {

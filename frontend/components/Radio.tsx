@@ -1,34 +1,17 @@
 import { FC } from 'react';
 import { useFormContext } from 'react-hook-form';
-import { tagColor } from '../data/tag';
+import { TagColor } from '../data/tag';
 import { Sentence } from '../types/paper';
 
-interface Radio {
-  data: tagColor;
+interface RadioInterface {
+  data: TagColor;
   sentence: Sentence;
   dataRegister: string;
 }
 
-const Radio: FC<Radio> = ({ data, sentence, dataRegister }) => {
+const Radio: FC<RadioInterface> = ({ data, sentence, dataRegister }) => {
   const methods = useFormContext();
-
-  let badgeColor;
-
-  if (data.color == 'warning') {
-    badgeColor = 'badge-warning';
-  } else if (data.color == 'info') {
-    badgeColor = 'badge-info';
-  } else if (data.color == 'primary') {
-    badgeColor = 'badge-primary';
-  } else if (data.color == 'success') {
-    badgeColor = 'badge-success';
-  } else if (data.color == 'accent') {
-    badgeColor = 'badge-accent';
-  } else if (data.color == 'neutral') {
-    badgeColor = 'badge-neutral';
-  } else {
-    badgeColor = 'badge-error';
-  }
+  const { getValues } = methods;
 
   return (
     <div className='form-control'>
@@ -36,12 +19,16 @@ const Radio: FC<Radio> = ({ data, sentence, dataRegister }) => {
         <input
           type='radio'
           className={`radio`}
-          value={data.tag}
-          defaultChecked={data.tag == sentence.tag}
           {...methods.register(dataRegister)}
+          value={data.tag}
+          defaultChecked={
+            getValues(`${dataRegister}`) == undefined
+              ? data.tag === sentence.tag
+              : data.tag == getValues(`${dataRegister}.tag`)
+          }
         />
         <span className='label-text ml-2'>
-          <div className={`badge badge-${data.color}`}>{data.tag}</div>
+          <div className={`badge ${data.color}`}>{data.tag}</div>
         </span>
       </label>
     </div>

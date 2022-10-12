@@ -48,7 +48,7 @@ const Annotation = () => {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      var bodyFormData = new FormData();
+      let bodyFormData = new FormData();
       bodyFormData.append('article_info', data.articleInfo);
       bodyFormData.append('domain_info', data.domainInfo);
       bodyFormData.append('paper_name', removeSpace(data.paperName));
@@ -201,11 +201,11 @@ const Annotation = () => {
                     >
                       {isSetFile ? (
                         <>
-                          <p>File Berhasil Di Tambahkan</p>
+                          <p>Paper Added</p>
                           <p className='font-medium'>{file?.name}</p>
                         </>
                       ) : (
-                        <p>Upload Disini</p>
+                        <p>Upload Here</p>
                       )}
                     </button>
                   </FileUploader>

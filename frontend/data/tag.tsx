@@ -1,35 +1,35 @@
-export const Tag: tagColor[] = [
+export const Tag: TagColor[] = [
   {
     tag: 'Claim',
-    color: 'warning',
+    color: 'badge-warning',
   },
   {
     tag: 'Method',
-    color: 'info',
+    color: 'badge-info',
   },
   {
     tag: 'Result',
-    color: 'primary',
+    color: 'badge-primary',
   },
   {
     tag: 'Conclusion',
-    color: 'success',
+    color: 'badge-success',
   },
   {
     tag: 'Method/Result',
-    color: 'accent',
+    color: 'badge-accent',
   },
   {
     tag: 'Other',
-    color: 'neutral',
+    color: 'badge-neutral',
   },
   {
     tag: 'Wrong extraction',
-    color: 'error',
+    color: 'badge-error',
   },
 ];
 
-export interface tagColor {
+export interface TagColor {
   tag: string;
   color: string;
 }

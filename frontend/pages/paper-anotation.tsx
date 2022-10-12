@@ -36,7 +36,9 @@ import {
 import { Profile } from '@/types/profil';
 import { toast } from 'react-toastify';
 import { changeLongSumValue } from '@/redux/longSummarizeSlice';
-import { changeProgressData, selectProgressValue } from '@/redux/progressSlice';
+import { changeProgressData } from '@/redux/progressSlice';
+import CorrectLabel from '@/components/CorrectLabel';
+import { Link } from 'react-scroll';
 
 const PaperAnotation: NextPage = () => {
   const methods = useForm();
@@ -150,9 +152,17 @@ const PaperAnotation: NextPage = () => {
     if (!user) return router.push('/login');
   };
 
+  const scrollToTop = () => {
+    const element = document.getElementById('top-section');
+    element!.scrollTop = 0;
+  };
+
   useEffect(() => {
     getProfil();
     Check();
+  }, []);
+
+  useEffect(() => {
     dispatch(changeProgressData(isDirty));
     setUserSummaryTemp();
   }, [isDirty]);
@@ -181,7 +191,7 @@ const PaperAnotation: NextPage = () => {
                 )}
               </div>
             </div>
-            <div className='md:w-1/2 w-full overflow-auto'>
+            <div className='md:w-1/2 w-full overflow-auto' id='top-section'>
               {/* Colapse Quick To How*/}
               <CardCollapse title={'Quick How To'}>
                 <QuickTo />
@@ -218,18 +228,9 @@ const PaperAnotation: NextPage = () => {
                                           ) : (
                                             ''
                                           )}
-                                          <div className='my-2'>
-                                            <label className='cursor-pointer flex items-center'>
-                                              <input
-                                                type='checkbox'
-                                                className='checkbox checkbox-sm mr-2'
-                                                {...methods.register(
-                                                  `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
-                                                )}
-                                              />
-                                              <p>Correct label</p>
-                                            </label>
-                                          </div>
+                                          <CorrectLabel
+                                            dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
+                                          />
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
@@ -258,18 +259,10 @@ const PaperAnotation: NextPage = () => {
                                       <div key={index}>
                                         <Sentence data={element[index - 1]} />
                                         <Sentence data={item} colored />
-                                        <div className='my-2'>
-                                          <label className='cursor-pointer flex items-center'>
-                                            <input
-                                              type='checkbox'
-                                              className='checkbox checkbox-sm mr-2'
-                                              {...methods.register(
-                                                `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
-                                              )}
-                                            />
-                                            <p>Correct label</p>
-                                          </label>
-                                        </div>
+                                        <CorrectLabel
+                                          dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
+                                        />
+
                                         <div className='flex flex-wrap'>
                                           {Tag.map((tag, idx) => {
                                             return (
@@ -295,25 +288,13 @@ const PaperAnotation: NextPage = () => {
                                           <Sentence data={element[index - 1]} />
                                           <Sentence data={item} colored />
                                           <Sentence data={element[index + 1]} />
-                                          <div className='my-2'>
-                                            <label className='cursor-pointer flex items-center'>
-                                              <input
-                                                type='checkbox'
-                                                className='checkbox checkbox-sm mr-2'
-                                                {...methods.register(
-                                                  `section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`
-                                                )}
-                                              />
-                                              <p>Correct label</p>
-                                            </label>
-                                          </div>
+                                          <CorrectLabel
+                                            dataRegister={`section_name.${numberSection}.selected_sentences.${indexSelected}.correct_label.${index}`}
+                                          />
                                           <div className='flex flex-wrap'>
                                             {Tag.map((tag, idx) => {
                                               return (
-                                                <div
-                                                  className='form-control'
-                                                  key={idx}
-                                                >
+                                                <div className=''>
                                                   <Radio
                                                     data={tag}
                                                     sentence={item}
@@ -343,17 +324,19 @@ const PaperAnotation: NextPage = () => {
 
                   <div className='flex flex-col justify-center mb-10'>
                     <div className='flex flex-row justify-between items-center'>
-                      <input
-                        type='button'
-                        value={'Previous Section'}
-                        className={`btn ${
-                          numberSection == 0 ? 'btn-disabled' : ''
-                        }`}
-                        onClick={() => {
-                          setNumberSection(numberSection - 1);
-                          setUserSummaryTemp();
-                        }}
-                      />
+                      <Link to='top' spy smooth>
+                        <input
+                          type='button'
+                          value={'Previous Section'}
+                          className={`btn ${
+                            numberSection == 0 ? 'btn-disabled' : ''
+                          }`}
+                          onClick={() => {
+                            setNumberSection(numberSection - 1);
+                            scrollToTop();
+                          }}
+                        />
+                      </Link>
                       <span>
                         {numberSection + 1} / {Sections?.length}
                       </span>
@@ -368,32 +351,23 @@ const PaperAnotation: NextPage = () => {
                           submit
                         </button>
                       ) : (
-                        <input
-                          type='button'
-                          value={'Next Section'}
-                          className={`btn ${
-                            numberSection == Sections?.length - 1
-                              ? 'btn-disabled'
-                              : ''
-                          }`}
-                          onClick={() => {
-                            setNumberSection(numberSection + 1);
-                            setUserSummaryTemp();
-                          }}
-                        />
+                        <Link to='top' spy smooth>
+                          <input
+                            type='button'
+                            value={'Next Section'}
+                            className={`btn ${
+                              numberSection == Sections?.length - 1
+                                ? 'btn-disabled'
+                                : ''
+                            }`}
+                            onClick={() => {
+                              setNumberSection(numberSection + 1);
+                              scrollToTop();
+                            }}
+                          />
+                        </Link>
                       )}
                     </div>
-                    {/* {numberSection == Sections?.length - 1 && (
-                      <button
-                        className='btn btn-success mt-3'
-                        {...methods.register('withLongsum')}
-                        onClick={() => {
-                          setValue('withLongsum', true);
-                        }}
-                      >
-                        go to summary evaluation
-                      </button>
-                    )} */}
                   </div>
                 </form>
               </FormProvider>

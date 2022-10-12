@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { axiosInstance } from '../lib/axios';
 
-type Register = {
+type RegisterType = {
   name: string;
   email: string;
   password: string;
@@ -16,7 +16,7 @@ const Register = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Register>();
+  } = useForm<RegisterType>();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -106,7 +106,7 @@ const Register = () => {
             </div>
           </form>
           <p>
-            Sudah punya akun?{' '}
+            Already have an account?{' '}
             <Link href='/login' passHref>
               <span className='link'>Login</span>
             </Link>

@@ -4,13 +4,13 @@ import { FC, ReactNode } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 
-interface Card {
+interface CardInterface {
   title: string;
   children: ReactNode;
   numSection?: number;
 }
 
-const Card: FC<Card> = ({ title, children, numSection }) => {
+const Card: FC<CardInterface> = ({ title, children, numSection }) => {
   const methods = useFormContext();
   const { pathname } = useRouter();
 
@@ -28,27 +28,28 @@ const Card: FC<Card> = ({ title, children, numSection }) => {
           <p className='ml-1'>{title}</p>
           {pathname === '/paper-anotation' ? (
             <div className='form-control'>
-              {Sections && Sections.map((section) => {
-                if (numSection === Sections.indexOf(section)) {
-                  return (
-                    <label
-                      className='cursor-pointer label'
-                      key={Sections.indexOf(section)}
-                    >
-                      <input
-                        type='checkbox'
-                        className='checkbox checkbox-sm mr-2'
-                        {...methods.register(
-                          `section_name.${numSection}.wrongextracted`
-                        )}
-                      />
-                      <span className='label-text badge badge-error'>
-                        Wrong extracted heading
-                      </span>
-                    </label>
-                  );
-                }
-              })}
+              {Sections &&
+                Sections.map((section) => {
+                  if (numSection === Sections.indexOf(section)) {
+                    return (
+                      <label
+                        className='cursor-pointer label'
+                        key={Sections.indexOf(section)}
+                      >
+                        <input
+                          type='checkbox'
+                          className='checkbox checkbox-sm mr-2'
+                          {...methods.register(
+                            `section_name.${numSection}.wrongextracted`
+                          )}
+                        />
+                        <span className='label-text badge badge-error'>
+                          Wrong extracted heading
+                        </span>
+                      </label>
+                    );
+                  }
+                })}
             </div>
           ) : (
             ''
